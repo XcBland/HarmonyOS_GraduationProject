@@ -1,0 +1,19 @@
+{
+  "appSelected": {
+    "appId": "5765880207856049055",
+    "appName": "My_Graduate_project",
+    "deviceTypes": [
+      {
+        "appAdapters": "4,5",
+        "deviceType": 4
+      }
+    ],
+    "enableSites": "CN",
+    "installationFree": 0,
+    "packageType": 7,
+    "projectId": "461323198429065626",
+    "projectName": "My_Gradute_Project",
+    "siteId": "CN"
+  },
+  "teamId": "2850086000480909257"
+}

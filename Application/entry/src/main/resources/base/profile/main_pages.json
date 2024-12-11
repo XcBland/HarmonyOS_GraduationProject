@@ -1,0 +1,7 @@
+{
+  "src": [
+    "pages/home/MapLocation",
+    "pages/LoginIndex",
+    "pages/Registration"
+  ]
+}
