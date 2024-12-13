@@ -1,0 +1,288 @@
+import UserModel from '../../models/UserModel'
+import { UserInfo } from '@hw-agconnect/auth-ohos/src/main/ets/entity/UserInfo'
+import cloud, { AuthUser, Storage } from '@hw-agconnect/cloud'
+
+import { promptAction, router } from '@kit.ArkUI'
+import { AgUser } from '../../enity'
+import { HmNavBar } from '../../components'
+import { PhoneRegisterDialog } from '../../components/PhoneRegisterDialog'
+
+
+/**
+ * @Auhtor DLY
+ *
+ */
+@Entry
+@Component
+struct Registration {
+  userModel: UserModel = UserModel.getInstance()
+  // 状态变量
+  @State userName: string = ''
+  @State password: string = ''
+  @State confirmPassword: string = ''
+  @State email: string = ''
+  @State phoneNum: string = ''
+  @State verificationCode: string = ''
+  @State displayName: string = ''; // 用户昵称
+  @State photoUrl: string = ''; // 用户头像;
+  @State isEnable: boolean = false; // 是否发送了验证码，默认是没有发送，发送的过程中isEnable为false
+  @State uploadingText: string = ''; //上传图片时过程中的进度文本显示
+  @StorageLink('user') currentUser: AgUser | null = null; // 当前登录的用户信息
+  storage: Storage = cloud.storage()
+  cloudPath: string | undefined = '';
+  authUser: AuthUser | undefined = undefined;
+  userInfo: UserInfo | null = new UserInfo(); // 用户信息
+  phoneRegisterDialog: CustomDialogController = new CustomDialogController({
+    builder: PhoneRegisterDialog(),
+    customStyle: true,
+    alignment: DialogAlignment.Center,
+    autoCancel: true
+  })
+
+  async getAgUser(user: AuthUser) {
+    let userExtra = await user.getUserExtra()
+    let agUser = new AgUser(user.getUid(), user.getPhotoUrl(), user.getEmail(), user.getDisplayName(),
+      userExtra.getCreateTime(), userExtra.getLastSignInTime())
+    return agUser
+  }
+
+  /*邮箱注册*/
+  async emailRegister() {
+    try {
+      let signInResult = await cloud.auth().createUser({
+        kind: 'email',
+        email: this.email,
+        password: this.password,
+        verifyCode: this.verificationCode
+      })
+      let user = signInResult.getUser()
+      let agUser = await this.getAgUser(user)
+      AppStorage.setOrCreate('user', agUser)
+
+      promptAction.showToast({ message: '注册成功' })
+      router.pushUrl({ url: 'pages/Login/LoginIndex' })
+
+    } catch (e) {
+      console.error('hmlog-->', 'emailRegister Failed. Err:', JSON.stringify(e))
+      promptAction.showToast({ message: '注册失败' })
+    }
+  }
+  // async saveUserInfoCloudDB(agUser:AgUser){
+  //   let userInfo:UserInfo={
+  //     uid:agUser.uid,
+  //     email:agUser.email,
+  //     displayName:agUser.displayName,
+  //   }
+  // }
+
+
+
+  build() {
+    Column() {
+      HmNavBar({ title: '注册', showBackIcon: true })
+      Stack({ alignContent: Alignment.Bottom }) {
+        Column({ space: 20 }) {
+          /*          Image(this.photoUrl)
+                      .width(100)
+                      .height(100)
+                      .margin({ top: 10 })
+                      .onClick(async () => {
+                        this.photoUrl = await this.selectPhoto()
+                        console.log('hmlog-->', 'this.photoUrl:' + this.photoUrl)
+                      })
+                      .alt($r('app.media.layered_image'))
+                      .borderRadius(10)
+                      .borderWidth(1)
+                      .borderColor('#ccc')
+                      .backgroundColor($r('app.color.background_page'))*/
+
+          TextInput({ placeholder: '请输入用户名' })
+            .width('90%')
+            .height(40)
+            .borderRadius(10)
+            .borderWidth(1)
+            .borderColor('#ccc')
+            .onChange((value: string) => {
+              this.userName = value
+            })
+            .backgroundColor($r('app.color.background_page'))
+
+
+          TextInput({ placeholder: '请输入密码' })
+            .width('90%')
+            .height(40)
+            .borderRadius(10)
+            .borderWidth(1)
+            .borderColor('#ccc')
+            .onChange((value: string) => {
+              this.password = value
+            })
+            .type(InputType.Password)
+            .backgroundColor($r('app.color.background_page'))
+
+          TextInput({ placeholder: '请确认密码' })
+            .width('90%')
+            .height(40)
+            .borderRadius(10)
+            .borderWidth(1)
+            .borderColor('#ccc')
+            .onChange((value: string) => {
+              this.confirmPassword = value
+            })
+            .type(InputType.Password)
+            .backgroundColor($r('app.color.background_page'))
+
+          TextInput({ placeholder: '请输入邮箱' })
+            .width('90%')
+            .height(40)
+            .borderRadius(10)
+            .borderWidth(1)
+            .borderColor('#ccc')
+            .onChange((value: string) => {
+              this.email = value
+              this.isEnable = true
+            })
+            .backgroundColor($r('app.color.background_page'))
+
+
+          Row() {
+            TextInput({ placeholder: '请输入验证码' })
+              .width('50%')
+              .height(40)
+              .borderRadius({ topLeft: 10, bottomLeft: 10 })
+              .border({
+                width: {
+                  left: 1,
+                  top: 1,
+                  bottom: 1,
+                  right: 0
+                }
+              })
+              .borderColor('#ccc')
+              .onChange((value: string) => {
+                this.verificationCode = value
+              })
+              .type(InputType.Number)
+              .borderColor('#ccc')
+            Button('获取验证码')
+              .onClick(() => {
+                this.userModel.getEmailVerifyCode(this.isEnable, this.email)
+                setTimeout(() => {
+                  this.isEnable = false
+                }, 60 * 1000)
+              })
+              .width('40%')
+              .height(40)
+              .borderRadius({ topRight: 10, bottomRight: 10 })
+              .border({
+                width: {
+                  left: 0,
+                  top: 1,
+                  bottom: 1,
+                  right: 1
+                }
+              })
+              .borderColor('#ccc')
+              .backgroundColor(this.email.length > 0 ? $r('app.color.primary') :
+              $r('app.color.disabled_button_background'))// .enabled(this.email.length > 0&&!this.isEnable)
+              .type(ButtonType.Normal)
+              .borderRadius(10)
+          }
+          .borderRadius(10)
+          .backgroundColor($r('app.color.background_page'))
+
+          Row() {
+            Radio({ value: 'radio', group: "radioGroup" })
+              .checked(false)
+              .radioStyle({ checkedBackgroundColor: "#007AFF" })
+              .width(20)
+              .height(20)
+              .onChange(() => {
+              })
+            Text('我已阅读并同意《用户注册协议》')
+              .fontSize(12)
+              .fontColor('#007AFF')
+
+          }
+          .width('90%')
+          .height(20)
+
+
+          Row() {
+            Radio({ value: 'radio2', group: "radioGroup2" })
+              .checked(false)
+              .radioStyle({ checkedBackgroundColor: "#007AFF" })
+              .width(20)
+              .height(20)
+              .onChange(() => {
+              })
+            Text('我已阅读并同意《用户隐私协议》')
+              .fontSize(12)
+              .fontColor('#007AFF')
+          }
+          .width('90%')
+          .height(20)
+
+          Button('注册')
+            .onClick(async () => {
+              if (this.userName.length === 0) {
+                promptAction.showToast({ message: '请输入用户名' })
+                return
+              }
+              if (this.password.length === 0) {
+                promptAction.showToast({ message: '请输入密码' })
+                return
+              }
+              if (this.email.length === 0) {
+                promptAction.showToast({ message: '请输入邮箱' })
+                return
+              }
+              if (this.password !== this.confirmPassword) {
+                promptAction.showToast({ message: '两次输入的密码不一致' })
+                return
+              }
+              if (this.password.length < 6) {
+                promptAction.showToast({ message: '密码长度不能少于6位' })
+                return
+              }
+              if (this.verificationCode.length !== 6) {
+                promptAction.showToast({ message: '验证码长度必须为6位' })
+                return
+              }
+/*              if (this.photoUrl.length === 0) {
+                promptAction.showToast({ message: '请选择头像' })
+                return
+              }*/
+
+              // await this.uploadIamgeToAGC()
+              await this.emailRegister() // 邮箱注册
+
+            })
+
+          Row() {
+            Text("手机号注册")
+              .fontSize(14)
+              .fontColor('#007AFF')
+              .onClick(() => {
+                this.phoneRegisterDialog.open()
+              })
+          }
+          .width('100%')
+          .height(40)
+          .justifyContent(FlexAlign.End)
+
+        }
+        .width('90%')
+        .height('100%')
+        .padding(20)
+        .borderRadius(10)
+
+      }
+    }
+    .backgroundImage($r('app.media.snowBac'))
+    .backgroundImageSize(ImageSize.Auto)
+    .width('100%')
+    .height('100%')
+
+  }
+}

@@ -1,7 +1,23 @@
 {
   "src": [
     "pages/home/MapLocation",
-    "pages/LoginIndex",
-    "pages/Registration"
+    "pages/home/Index",
+    "pages/Login/LoginIndex",
+    "pages/Register/Registration",
+    "pages/Start/StartAd",
+    "pages/home/Mine/expansionBar",
+    "pages/home/Mine/SettingPage",
+    "pages/Setting/ClearCache/ClearCache",
+    "pages/Setting/Account_Management/Account_Management",
+    "pages/Setting/Notification_Setting/Notification_Settings",
+    "pages/Setting/Privacy_Settings/Privacy_Settings",
+    "pages/Setting/Common_Problems/Common_Problems",
+    "pages/Setting/release/Release",
+    "pages/expansion/order/Order",
+    "pages/expansion/favorite/Favorite",
+    "pages/expansion/travel_program/Travel_Program",
+    "pages/expansion/card_coupon/Card_Coupon",
+    "pages/expansion/browsing_history/Browsing_History",
+    "pages/home/Mine/MoreMine"
   ]
 }

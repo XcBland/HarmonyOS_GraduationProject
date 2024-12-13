@@ -1,0 +1,26 @@
+{
+  "cloudDBZoneName": "default",
+  "objectTypeName": "userInfo",
+  "objects": [
+    {
+      "id": 10,
+      "displayName": "string1",
+      "email": "string1",
+      "phoneNum": "string1",
+      "photoUrl": "string1",
+      "birthday": "string1",
+      "gender": 0,
+      "sign": "string1"
+    },
+    {
+      "id": 20,
+      "displayName": "string2",
+      "email": "string2",
+      "phoneNum": "string2",
+      "photoUrl": "string2",
+      "birthday": "string2",
+      "gender": 0,
+      "sign": "string2"
+    }
+  ]
+}

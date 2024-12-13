@@ -2,7 +2,7 @@ import { abilityAccessCtrl, AbilityConstant, PermissionRequestResult, UIAbility,
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { initialize } from '@hw-agconnect/hmcore';
-import json from '../../resources/rawfile/agconnect-services.json';
+import json from '../../resources/rawfile/app-schema.json';
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     try {
@@ -30,7 +30,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-    windowStage.loadContent('pages/Registration', (err, data) => {
+    windowStage.loadContent('pages/Start/StartAd', (err, data) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;

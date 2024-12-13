@@ -1,7 +1,8 @@
-import cloud, { VerifyCodeAction } from '@hw-agconnect/cloud'
+import cloud, { AuthUser, VerifyCodeAction } from '@hw-agconnect/cloud'
 import { HmNavBar } from '.'
-import UserModel from '../model/UserModel'
+import UserModel from '../models/UserModel'
 import { promptAction, router } from '@kit.ArkUI'
+import { AgUser } from '../enity'
 
 @CustomDialog
 @Component
@@ -14,8 +15,24 @@ export struct PhoneRegisterDialog {
   @State phoneNum: string = ''  // 手机号
   @State verifyCode: string = ''  // 验证码
   @State isEnable: boolean = true  // 验证码是否可用
+  @StorageLink('user') currentUser:AgUser | undefined =
+   undefined // 当前登录用户信息
 
   // 方法
+
+
+  /**
+   * 提取登陆成功之后AUthUser对象信息，封装成AgUser对象返回
+   * @param user   登录成功的AuthUser对象
+   * @returns AgUser对象
+   */
+  async getAgUser(user: AuthUser) {
+    let userExtra = await user.getUserExtra()
+    let agUser = new AgUser(user.getUid(),
+      user.getPhone(), userExtra.getCreateTime(),
+      userExtra.getLastSignInTime())
+    return agUser
+  }
   // 手机号注册
   async phoneRegister(){
     try{
@@ -24,8 +41,11 @@ export struct PhoneRegisterDialog {
         countryCode: '86',
         phoneNumber: this.phoneNum,
         verifyCode: this.verifyCode
-      }).then(()=>{
+      }).then(async (result)=>{
         this.isEnable = true
+        let user = result.getUser()
+        let agUser = await this.getAgUser(user)
+        AppStorage.setOrCreate<AgUser>('uesr',agUser)
         promptAction.showToast({message:'注册成功'})
       })
     }catch(e){
@@ -79,7 +99,7 @@ export struct PhoneRegisterDialog {
           await this.phoneRegister()
           setTimeout(async () => {
             await this.phRegisterDialog.close()
-            router.replaceUrl({ url: 'pages/LoginIndex' })
+            router.replaceUrl({ url: 'pages/Login/LoginIndex' })
           },3000)
 
 

@@ -15,7 +15,7 @@
         "name": "EntryAbility",
         "srcEntry": "./ets/entryability/EntryAbility.ets",
         "description": "$string:entryability_desc",
-        "icon": "$media:paotui",
+        "icon": "$media:leto",
         "label": "$string:entryability_label",
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:white",
