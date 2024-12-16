@@ -25,7 +25,7 @@ export async function requestHttp<T>(url: string = "",
     url,
     method,
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': AppStorage.get<string>(TOKEN_KEY) || ''  // ||===??
     },
     params: method === 'get' ? data : null, // (第二种)

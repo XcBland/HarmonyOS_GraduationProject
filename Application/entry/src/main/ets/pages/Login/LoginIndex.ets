@@ -1,9 +1,10 @@
 import { APP_TOP_HEIGHT, TOKEN_KEY } from '../../constants'
 import { font, router } from '@kit.ArkUI'
-import cloud from '@hw-agconnect/cloud'
+import cloud, { Database, DatabaseCollection } from '@hw-agconnect/cloud'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { PhoneLoginDialog } from '../../components/PhoneLoginDialog'
-
+import { userInfo_01 as userInfo } from '../../enity/userInfo';
+import schema from '../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 /**
  * @Auhtor DLY
  *
@@ -13,6 +14,16 @@ PersistentStorage.persistProp(TOKEN_KEY, "")
 @Entry
 @Component
 struct LoginIndex {
+  // CloudDB API
+  private cloudDB: Database | null = null;
+  // 云数据库存储区
+  private cloudDBZone = 'Graduation';
+  // 状态变量
+  @State email: string = ''
+  @State password: string = ''
+  @StorageLink('local_userInfo')data:userInfo = new userInfo()
+
+  cloudDataBase:DatabaseCollection<userInfo>|undefined = undefined
   // 手机登录弹窗
   phoneLoginTo:CustomDialogController = new CustomDialogController({
     builder:PhoneLoginDialog(),
@@ -48,13 +59,27 @@ struct LoginIndex {
       console.error('login28-->'+JSON.stringify(error))
     })
   }
-  // 状态变量
-  @State email: string = ''
-  @State password: string = ''
+
+  // 获取Auth的Uid，根据Uid对应判断数据库里的内容
+  async getUid(){
+    const uid = await cloud.auth().getCurrentUser().then(user => {
+      return user?.getUid()
+    })
+    this.cloudDB = cloud.database({
+      objectTypeInfo: schema,
+      zoneName: this.cloudDBZone,
+    })
+    this.cloudDataBase = this.cloudDB?.collection<userInfo>(userInfo)
+    const data = await this.cloudDataBase?.query().equalTo('id',uid).get()
+    if(data.length > 0){
+      this.data = data[0]
+    }
+  }
+
 
   // 生命周期函数
   aboutToAppear(){
-    this.init()
+    // this.init()
     font.registerFont({
       familyName:'JiaoDai',
       familySrc:$rawfile('font/JiaoDai.TTF')

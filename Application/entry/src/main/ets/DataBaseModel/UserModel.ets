@@ -1,7 +1,7 @@
 
 import cloud, { Database, DatabaseCollection } from '@hw-agconnect/cloud'
 import schema from '../../resources/rawfile/My_Gradute_Project_3_cn.json'
-import { userInfo as UserInfo } from '../enity/userInfo'
+import { userInfo_01 as UserInfo } from '../enity/userInfo'
 
 class UserModel{
   private zoneName:string = 'Graduation'  // 数据库所在区域名称
@@ -16,12 +16,14 @@ class UserModel{
     this.collection = this.database.collection<UserInfo>(UserInfo)  // 实例化用户信息集合对象
   }
 
-  // 获取用户所有信息内容
+/*  // 获取用户所有信息内容
   async getUserInfo(uid:string){
     let user = await this.collection!.query().equalTo('uid', uid).get()
     return user[0]
-  }
+  }*/
 
 
 
 }
+
+// type paramsType = number | string | Date;

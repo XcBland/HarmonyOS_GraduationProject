@@ -3,10 +3,11 @@ import { HmNavBar } from '../../../components'
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { promptAction, router } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { userInfo } from '../../../enity/userInfo';
+import { userInfo_01 as userInfo } from '../../../enity/userInfo';
 import { AgUser } from '../../../enity';
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { userTestParams, userTestParamsModel } from '../../../TextModel/userTestModel';
+import dayjs from '@hview/dayjs';
 
 
 @Entry
@@ -19,8 +20,8 @@ struct MoreMine {
   @State isLoaded: boolean = false; //标记页面是否加载完成
   @State displayName: string = ''; //用户昵称
   @StorageLink('user') currentUser: AgUser | undefined = AppStorage.get<AgUser>('user')
+  @StorageLink('local_userInfo') userInfo: userInfo = new userInfo()
   // 员工列表
-  @State user: userInfo = new userInfo();
   @State resultArray: userInfo[]=[]
   // CloudDB API
   private cloudDB: Database | null = null;
@@ -31,9 +32,7 @@ struct MoreMine {
   authUser:AuthUser|null =null
   storage: Storage = cloud.storage()
   cloudPath: string | undefined = '';
-/*  userTestModel:userTestParamsModel = new userTestParamsModel({
 
-  })*/
   async aboutToAppear(){
     this.cloudDB = cloud.database({
       objectTypeInfo: schema,
@@ -75,6 +74,7 @@ struct MoreMine {
     AppStorage.set('user',this.photoUrl)
     //防止缓存  通过刷新时间戳引动UI刷新
     this.photoUrl=`${url}&ts=${new Date().getTime()}`
+    this.userInfo.setPhotoUrl(this.photoUrl)
     if(transResult.bytesTransferred===transResult.totalByteCount){
       await this.saveUser()
       promptAction.showToast({message:'上传成功'})
@@ -86,14 +86,15 @@ struct MoreMine {
   async saveUser(){
     try{
       await this.authUser!.updateProfile({
-        displayName:'1',
-        photoUrl:this.photoUrl
+        displayName:this.userInfo.getDisplayName(),
+        photoUrl:this.userInfo.getPhotoUrl(),
       })
     }catch(e){
       console.log("UpdatePersonal.65==>"+JSON.stringify((e)))
     }
   }
 
+  //查询用户信息
   async query(){
     try{
       this.resultArray = await this.cloudDataBase!.query().get()
@@ -103,14 +104,23 @@ struct MoreMine {
     }
   }
 
+  // 更新用户信息
+  async updateUserInfo(userInfo:userInfo){
+    try{
+      await this.cloudDataBase?.upsert(userInfo)
+    }catch(e){
+      console.log("UpdatePersonal.110==>"+JSON.stringify((e)))
+    }
+  }
 
-  onPageShow(): void {
-    cloud.auth().getCurrentUser().then(async user=>{
+  async onPageShow(){
+    await cloud.auth().getCurrentUser().then(async user=>{
       this.authUser=user
       this.displayName=user!.getDisplayName()
       this.photoUrl=user!.getPhotoUrl()
       // this.userInfo=await userModel.GetUserInfoByUid(user!.getUid())
       this.isLoaded=true
+      // 测试
     })
   }
 
@@ -119,13 +129,18 @@ struct MoreMine {
       HmNavBar({title:'编辑资料'})
       Column(){
         Row({space:20}){
-          Text('头像')
+          Text('头 像')
             .fontSize(16)
-          Image(this.photoUrl===''? $r('app.media.user_dark'):this.photoUrl)
-            .width(20)
-            .height(20)
+            .fontColor($r('app.color.white'))
+            .fontFamily('single')
+            .margin({left:10})
+          Image(this.userInfo.getPhotoUrl()===''? $r('app.media.user_dark'):this.userInfo.getPhotoUrl())
+            .width(100)
+            .height(100)
             .borderRadius(70)
             .alt( $r('app.media.user_dark'))
+            .margin({left:80})
+            .padding(10)
             .onClick(async ()=>{
               try{
                 await this.selectAndUploadAvator(); //选择并上传头像
@@ -137,32 +152,128 @@ struct MoreMine {
                 this.isAvatorTitle=!this.uploading
                 console.log("UpdatePersonal.131==>"+JSON.stringify((e)))
               }
-
             })
-          Text(this.currentUser?.email)
-
         }
         .justifyContent(FlexAlign.Start)
         .width('100%')
         .borderWidth({bottom:1})
 
-        ForEach(this.resultArray, (item:userInfo, index) => {
-          Text(item.displayName)
-          Text(item.email)
-          Text(item.phoneNum)
-          Text(item.birthday)
-          Text(item.gender?'女':'男')
-          Text(item.sign)
-        })
-        Button('查询')
+        Row({space:10}){
+          Text('用户名:')
+            .fontColor($r('app.color.white')).fontFamily('single')
+            .margin({left:10})
+
+          TextInput({text:this.userInfo.getDisplayName()})
+            .width('60%')
+            .onChange((value)=>{
+              this.userInfo.setDisplayName(value)
+            })
+            .fontColor($r('app.color.white'))
+            .fontFamily('single')
+        }.width('100%')
+
+        Row(){
+          Text(this.userInfo.getEmail() ? `邮箱：${this.userInfo.getEmail()}`:'邮箱尚未绑定')
+            .fontColor($r('app.color.white')).fontFamily('single')
+            .margin({left:10})
+        }.width('100%').margin({top:10})
+        Row(){
+          Text(this.userInfo.getPhoneNum() ? `手机号：${this.userInfo.getPhoneNum()}`:'手机号尚未绑定')
+            .width('100%')
+            .textAlign(TextAlign.Start)
+            .fontColor($r('app.color.white')).fontFamily('single')
+            .margin({left:10})
+        }
+        .margin({top:20})
+        .width('100%')
+        //Text(Number(this.userInfo.getGender()) === 0 ? `性别：女`:'性别：男')
+        Row({space:10}){
+          Text('性 别:')
+            .fontColor($r('app.color.white')).fontFamily('single')
+            .margin({left:10})
+          TextInput({text:this.userInfo.getGender()})
+            .width('60%')
+            .onChange((value:string)=>{
+              this.userInfo.setGender(value)
+            })
+            .fontColor($r('app.color.white'))
+            .fontFamily('single')
+        }.width('100%').margin({top:10})
+        //Text(`生日：${this.userInfo.getBirthday()}`)
+        Row({space:10}){
+          Text('生 日:')
+            .fontColor($r('app.color.white')).fontFamily('single')
+            .margin({left:10})
+          // TextInput({text:this.userInfo.getBirthday()})
+          //   .width('60%')
+          //   .onChange((value)=>{
+          //     this.userInfo.setBirthday(value)
+          //   })
+          //   .fontColor($r('app.color.white'))
+          //   .fontFamily('single')
+          Text(this.userInfo.getBirthday())
+            .fontColor($r('app.color.white'))
+            .fontFamily('single')
+            .margin({left:10})
+            .width('60%')
+            .onClick(()=>{
+              DatePickerDialog.show({
+                showTime: true, //是否显示时间
+                useMilitaryTime: true,   //是否24小时制
+                alignment:DialogAlignment.Bottom, //对齐方式
+                onDateAccept: (date:Date)=>{
+                  this.userInfo.setBirthday(dayjs(date).format('YYYY-MM-DD'))
+                }, //日期选择回调
+                dateTimeOptions:{
+                  year: new Date().getFullYear().toString(),
+                  month: (new Date().getMonth() + 1).toString().padStart(2),
+                  day: new Date().getDate().toString().padStart(2)
+                }
+              })
+            })
+
+        }.width('100%').margin({top:20})
+        //Text(this.userInfo.getSignature() ? `个性签名：${this.userInfo.getSignature()}`:'未设置个性签名')
+        Column({space:10}){
+          Text('个性签名:')
+            .fontColor($r('app.color.white')).fontFamily('single')
+            .margin({left:20})
+            .textAlign(TextAlign.Start)
+            .width('100%')
+          TextArea({text:this.userInfo.getSignature()})
+            .maxLength(100)
+            .width('80%')
+            .onChange((value)=>{
+              this.userInfo.setSignature(value)
+            })
+            .border({width:1,color:'#f5f5f5'})
+            .height(80)
+            .fontColor($r('app.color.white'))
+            .fontFamily('single')
+            // .backgroundColor('#f5f5f5')
+
+        }.width('100%').margin({top:20})
+
+        Button('保存')
           .onClick(async ()=>{
-            await this.query()
+            // await this.query()
+            await this.updateUserInfo(this.userInfo)
+            promptAction.showToast({message:'保存成功'})
+            router.back()
           })
+          .type(ButtonType.Normal)
+          .backgroundColor($r('app.color.white'))
+          .fontColor($r('app.color.black'))
+          .width('50%')
+          .borderRadius(100)
+          .margin({top: 100, bottom: 20})
       }
     }
     .width('100%')
     .height('100%')
+    .backgroundImage($r('app.media.fengjing8'))
+    .backgroundImageSize(ImageSize.Cover)
 
-    
+
   }
 }

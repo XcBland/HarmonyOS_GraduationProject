@@ -1,1 +1,1 @@
-export const BASE_URL = "http://122.51.240.24:31007/driver"
+export const BASE_URL = "http://apis.juhe.cn/fapigx/scenic/query"

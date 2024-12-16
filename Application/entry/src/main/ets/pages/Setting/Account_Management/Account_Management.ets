@@ -1,10 +1,15 @@
-import cloud, { AuthUser } from '@hw-agconnect/cloud'
+import cloud, { AuthUser, Database, DatabaseCollection } from '@hw-agconnect/cloud'
 /**
  * @Auhtor DLY
  *
  */
 import { AgUser } from '../../../enity'
 import { HmCard, HmNavBar } from '../../../components'
+import { userInfo_01 as userInfo } from '../../../enity/userInfo'
+import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
+import { PhoneLinkDialog } from '../../../components/PhoneLinkDialog'
+import { PhoneUpdateDialog } from '../../../components/PhoneUpdateDialog'
+import { PassWordUpdateDialog } from '../../../components/PassWordUpdateDialog'
 
 @Entry
 @Component
@@ -13,17 +18,58 @@ struct Account_Management {
     AppStorage.get('user')
   user: AuthUser | null = null
   @State phone: string = ''
+  @State verifyCode: string = ''
   @State content: Content[] = [
     {img:$r('app.media.QQ'),title:'QQ',text:'绑定'},
     {img:$r('app.media.wechat'),title:'微信',text:'绑定'},
     {img:$r('app.media.weibo'),title:'微博',text:'绑定'}
   ]
+  @StorageLink('local_userInfo') userInfo:userInfo = new userInfo()
+  // CloudDB API
+  private cloudDB: Database | null = null;
+  // 云数据库存储区
+  private cloudDBZone = 'Graduation';
+  cloudDataBase:DatabaseCollection<userInfo>|undefined = undefined
+  // 绑定手机号弹窗
+  phoneController:CustomDialogController = new CustomDialogController({
+    builder: PhoneLinkDialog(),
+    autoCancel: true,
+    customStyle: true,
+    alignment:DialogAlignment.Center
+  })
+
+  // 修改手机号弹窗
+  phoneUpdateController:CustomDialogController = new CustomDialogController({
+    builder: PhoneUpdateDialog(),
+    autoCancel: true,
+    customStyle: true,
+    alignment:DialogAlignment.Center
+  })
+
+  // 修改密码弹窗
+  passwordController:CustomDialogController = new CustomDialogController({
+    builder: PassWordUpdateDialog(),
+    autoCancel: true,
+    customStyle: true,
+    alignment:DialogAlignment.Center
+  })
   async aboutToAppear(){
     this.user = await cloud.auth().getCurrentUser()
     if (this.user?.getPhone()){
       this.phone = this.user.getPhone()
     }
+    this.cloudDB = cloud.database({
+      objectTypeInfo: schema,
+      zoneName: this.cloudDBZone,
+    })
+    this.cloudDataBase = this.cloudDB?.collection<userInfo>(userInfo)
+    this.userInfo.getPhoneNum()
   }
+
+
+
+
+
   build() {
     Column() {
       HmNavBar({title: '账号管理'})
@@ -35,6 +81,7 @@ struct Account_Management {
         }
         .justifyContent(FlexAlign.Start)
         .width('100%')
+        .margin({top:20})
         Row(){
           Row({space:5}){
             Image($r('app.media.phoneLine'))
@@ -46,25 +93,29 @@ struct Account_Management {
               .textAlign(TextAlign.Center)
           }
           .width('30%')
-          Text(this.phone || '未绑定')
+          Text(this.userInfo.getPhoneNum() || '未绑定')
             .fontSize(14)
             .fontColor($r('app.color.text_secondary'))
             .margin({left:20})
 
           Blank()
 
-          Button(this.phone!==''? '修改' : '绑定')
+
+          Button(this.userInfo.getPhoneNum()!==''? '修改' : '绑定')
             .margin({right:5})
             .type(ButtonType.Normal)
             .fontSize(14)
-            .backgroundColor($r('app.color.white'))
+            .backgroundColor('#ff4174ff')
             .height(30)
-            .width(100)
+            .width(60)
+            .borderRadius(10)
             .onClick(() => {
               if(this.phone === ''){
                 // TODO 绑定手机号
+                this.phoneController.open()
               }else{
                 // TODO 修改手机号
+                this.phoneUpdateController.open()
               }
             })
 
@@ -75,6 +126,7 @@ struct Account_Management {
       }
       .width('100%')
       .height(80)
+
       Column(){
         Row(){
           Text('第三方账户绑定')
@@ -143,6 +195,7 @@ struct Account_Management {
             .textAlign(TextAlign.Center)
             .onClick(() => {
               // TODO 修改密码
+              this.passwordController.open()
             })
 
         }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 6,
   "permissions": [
     {
       "permissions": [
@@ -36,7 +36,44 @@
           ]
         }
       ],
-      "objectTypeName": "userInfo"
+      "objectTypeName": "userInfo_01"
+    },
+    {
+      "permissions": [
+        {
+          "role": "World",
+          "rights": [
+            "Read",
+            "Upsert",
+            "Delete"
+          ]
+        },
+        {
+          "role": "Authenticated",
+          "rights": [
+            "Read",
+            "Upsert",
+            "Delete"
+          ]
+        },
+        {
+          "role": "Creator",
+          "rights": [
+            "Read",
+            "Upsert",
+            "Delete"
+          ]
+        },
+        {
+          "role": "Administrator",
+          "rights": [
+            "Read",
+            "Upsert",
+            "Delete"
+          ]
+        }
+      ],
+      "objectTypeName": "traveLogue"
     }
   ],
   "objectTypes": [
@@ -52,7 +89,7 @@
           ]
         }
       ],
-      "objectTypeName": "userInfo",
+      "objectTypeName": "userInfo_01",
       "fields": [
         {
           "isNeedEncrypt": false,
@@ -60,7 +97,7 @@
           "notNull": true,
           "isSensitive": false,
           "belongPrimaryKey": true,
-          "fieldType": "Integer"
+          "fieldType": "String"
         },
         {
           "isNeedEncrypt": false,
@@ -109,11 +146,75 @@
           "isSensitive": false,
           "defaultValue": "0",
           "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "signature",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        }
+      ]
+    },
+    {
+      "indexes": [
+        {
+          "indexName": "id",
+          "indexList": [
+            {
+              "fieldName": "id",
+              "sortType": "ASC"
+            }
+          ]
+        }
+      ],
+      "objectTypeName": "traveLogue",
+      "fields": [
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "id",
+          "notNull": true,
+          "isSensitive": false,
+          "belongPrimaryKey": true,
           "fieldType": "Integer"
         },
         {
           "isNeedEncrypt": false,
-          "fieldName": "sign",
+          "fieldName": "title",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "content",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "photoUrl",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "publishTime",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "label",
           "notNull": false,
           "isSensitive": false,
           "belongPrimaryKey": false,

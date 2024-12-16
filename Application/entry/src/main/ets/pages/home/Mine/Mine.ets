@@ -1,6 +1,7 @@
 import cloud, { AuthUser } from "@hw-agconnect/cloud"
 import { router } from "@kit.ArkUI"
 import { AgUser } from "../../../enity"
+import { userInfo_01 as userInfo } from "../../../enity/userInfo"
 
 @Preview
 @Component
@@ -8,15 +9,19 @@ export struct Mine {
   user:AuthUser|null = null
   @State phone: string = ''
   @State photoUrl: string = ''
+  @State displayName: string = ''
   @StorageLink('user') currentUser:AgUser|undefined = AppStorage.get<AgUser>('user')
-
+  @StorageLink('local_userInfo') data:userInfo = new userInfo()
   async aboutToAppear(){
     this.user = await cloud.auth().getCurrentUser()
-    if (this.user?.getPhone()){
-      this.phone = this.user.getPhone()
+    if (this.user?.getEmail()){
+      this.displayName = this.user.getDisplayName()
+      this.phone = this.user.getEmail()
       this.photoUrl = this.user.getPhotoUrl()
     }
   }
+
+  //TODO: 待实现(再次调取数据库）
 
   build() {
     Scroll() {
@@ -47,21 +52,22 @@ export struct Mine {
         .padding(20)
 
         Column({ space: 20 }) {
-          Image($r('app.media.app_icon'))
+          Image(this.data.getPhotoUrl() || $r('app.media.user_dark'))
             .width(100)
             .aspectRatio(1)
             .onClick(()=>{
               router.pushUrl({url:'pages/home/Mine/MoreMine'})
             })
 
-          Text('用户名')
+          Text(this.data.getDisplayName()? this.data.getDisplayName() : '未登录')
             .fontSize(18)
             .fontFamily('single')
             .fontColor($r('app.color.text_primary'))
-          Text('个性签名')
+          Text(this.data.getSignature() || '这个人很懒，什么都没留下')
             .fontSize(16)
             .fontFamily('single')
             .fontColor($r('app.color.text_secondary'))
+            .margin({bottom:20})
         }
         .width('100%')
         .margin({ top: 20 })

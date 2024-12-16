@@ -1,11 +1,15 @@
 import UserModel from '../../models/UserModel'
 import { UserInfo } from '@hw-agconnect/auth-ohos/src/main/ets/entity/UserInfo'
-import cloud, { AuthUser, Storage } from '@hw-agconnect/cloud'
-
+import cloud, { AuthUser, Database, DatabaseCollection, Storage } from '@hw-agconnect/cloud'
+import schema from '../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { promptAction, router } from '@kit.ArkUI'
 import { AgUser } from '../../enity'
 import { HmNavBar } from '../../components'
 import { PhoneRegisterDialog } from '../../components/PhoneRegisterDialog'
+import { userInfo_01 as userInfo } from '../../enity/userInfo'
+import { TOKEN_KEY } from '../../constants'
+import { BusinessError } from '@kit.BasicServicesKit'
+import { photoAccessHelper } from '@kit.MediaLibraryKit'
 
 
 /**
@@ -23,15 +27,29 @@ struct Registration {
   @State email: string = ''
   @State phoneNum: string = ''
   @State verificationCode: string = ''
-  @State displayName: string = ''; // 用户昵称
   @State photoUrl: string = ''; // 用户头像;
   @State isEnable: boolean = false; // 是否发送了验证码，默认是没有发送，发送的过程中isEnable为false
   @State uploadingText: string = ''; //上传图片时过程中的进度文本显示
   @StorageLink('user') currentUser: AgUser | null = null; // 当前登录的用户信息
   storage: Storage = cloud.storage()
   cloudPath: string | undefined = '';
-  authUser: AuthUser | undefined = undefined;
+  authUser: AuthUser | null = null;
   userInfo: UserInfo | null = new UserInfo(); // 用户信息
+  cloudDataBase: DatabaseCollection<userInfo> | undefined = undefined
+  @State resultArray: userInfo[] = []
+  // CloudDB API
+  private cloudDB: Database | null = null;
+  // 云数据库存储区
+  private cloudDBZone = 'Graduation';
+
+  async aboutToAppear() {
+    this.cloudDB = cloud.database({
+      objectTypeInfo: schema,
+      zoneName: this.cloudDBZone,
+    })
+    this.cloudDataBase = this.cloudDB?.collection<userInfo>(userInfo)
+  }
+
   phoneRegisterDialog: CustomDialogController = new CustomDialogController({
     builder: PhoneRegisterDialog(),
     customStyle: true,
@@ -46,6 +64,55 @@ struct Registration {
     return agUser
   }
 
+  /**
+   * 选择图片上传
+   * @returns
+   */
+  async selectPhoto() {
+    const options = new photoAccessHelper.PhotoSelectOptions(); // 创建PhotoSelectOptions对象
+    options.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_TYPE; // 设置选择图片类型
+    options.maxSelectNumber = 1;
+    const result = await new photoAccessHelper.PhotoViewPicker().select(options) // 调用PhotoViewPicker的select方法选择图片
+    return result.photoUris[0]; // 返回选择的图片的路径文件
+  }
+
+  /**
+   * 上传图片到云存储
+   */
+  async uploadIamgeToAGC(){
+    try {
+      let extName = this.photoUrl!.split('.').pop();
+      let fileName = `${Date.now()}.${extName}`;
+      this.cloudPath = `myProjectImage/myAvcator/${fileName}`
+      let result = await this.storage.upload({
+        localPath: this.photoUrl,
+        cloudPath:this.cloudPath
+      })
+      if(result.bytesTransferred===result.totalByteCount){
+        promptAction.showToast({ message: '图片上传成功！' })
+        return true;
+      }else{
+        promptAction.showToast({ message: '图片上传失败！' })
+        return false;
+      }
+    }catch (e){
+      console.error('hmlog-->', 'uploadImageToAGC Failed. Err:', JSON.stringify(e))
+      promptAction.showToast({ message: '上传图片异常' })
+      return false
+    }
+  }
+
+
+  /**
+   * 获取云存储文件路径
+   */
+  async getAGCFileUri(){
+    let imgUri = await this.storage.getDownloadURL(this.cloudPath)
+    this.photoUrl = imgUri
+    promptAction.showToast({ message: '获取图片路径成功！' })
+    return imgUri
+  }
+
   /*邮箱注册*/
   async emailRegister() {
     try {
@@ -56,45 +123,86 @@ struct Registration {
         verifyCode: this.verificationCode
       })
       let user = signInResult.getUser()
+      cloud.auth().getCurrentUser().then(async (user) => {
+        if (user){
+          this.authUser = user
+          await user.getToken(false)
+          await this.addUser(this.authUser) // 云数据库存储用户信息
+          await this.uploadIamgeToAGC()     // 上传图片到云存储
+        }
+      })
+      user.updateProfile({
+        displayName: this.userName,
+        photoUrl: this.photoUrl
+      })
       let agUser = await this.getAgUser(user)
       AppStorage.setOrCreate('user', agUser)
 
       promptAction.showToast({ message: '注册成功' })
-      router.pushUrl({ url: 'pages/Login/LoginIndex' })
+      router.pushUrl({ url: 'pages/home/Index' })
 
     } catch (e) {
       console.error('hmlog-->', 'emailRegister Failed. Err:', JSON.stringify(e))
       promptAction.showToast({ message: '注册失败' })
     }
   }
-  // async saveUserInfoCloudDB(agUser:AgUser){
-  //   let userInfo:UserInfo={
-  //     uid:agUser.uid,
-  //     email:agUser.email,
-  //     displayName:agUser.displayName,
-  //   }
-  // }
 
+  // 添加用户
+  async addUser(user: AuthUser | null) {
+    try {
+      let addUser = new userInfo()
+      addUser.id = user?.getUid()
+      addUser.displayName = this.userName
+      addUser.photoUrl = this.photoUrl
+      addUser.phoneNum = user?.getPhone()
+      addUser.email = this.email
+      let newUser = await this.cloudDataBase?.upsert(addUser)
+      if (newUser !== null) {
+        AlertDialog.show({ message: '注册成功' })
+      } else {
+        promptAction.showToast({ message: '注册失败' })
+      }
+    } catch (e) {
+      console.error('hmlog-->', 'addUser Failed. Err:', JSON.stringify(e))
+    }
+  }
 
+  // 邮箱登录
+  /*async emailLogin() {
+    await cloud.auth().signOut()
+    await cloud.auth().signIn({
+      autoCreateUser: true,
+      credentialInfo: {
+        kind: 'email',
+        email: this.email,
+        password: this.password
+      }
+    }).then(user => {
+      AppStorage.set(TOKEN_KEY, user.getUser().getToken(true))
+      router.replaceUrl({ url: 'pages/home/Index' })
+    }).catch((error: BusinessError) => {
+      console.error('login28-->' + JSON.stringify(error))
+    })
+  }*/
 
   build() {
     Column() {
       HmNavBar({ title: '注册', showBackIcon: true })
       Stack({ alignContent: Alignment.Bottom }) {
         Column({ space: 20 }) {
-          /*          Image(this.photoUrl)
-                      .width(100)
-                      .height(100)
-                      .margin({ top: 10 })
-                      .onClick(async () => {
-                        this.photoUrl = await this.selectPhoto()
-                        console.log('hmlog-->', 'this.photoUrl:' + this.photoUrl)
-                      })
-                      .alt($r('app.media.layered_image'))
-                      .borderRadius(10)
-                      .borderWidth(1)
-                      .borderColor('#ccc')
-                      .backgroundColor($r('app.color.background_page'))*/
+          Image(this.photoUrl)
+            .width(100)
+            .height(100)
+            .margin({ top: 10 })
+            .onClick(async () => {
+              this.photoUrl = await this.selectPhoto()
+              console.log('hmlog-->', 'this.photoUrl:' + this.photoUrl)
+            })
+            .alt($r('app.media.layered_image'))
+            .borderRadius(10)
+            .borderWidth(1)
+            .borderColor('#ccc')
+            .backgroundColor($r('app.color.background_page'))
 
           TextInput({ placeholder: '请输入用户名' })
             .width('90%')
@@ -249,13 +357,15 @@ struct Registration {
                 promptAction.showToast({ message: '验证码长度必须为6位' })
                 return
               }
-/*              if (this.photoUrl.length === 0) {
+              if (this.photoUrl.length === 0) {
                 promptAction.showToast({ message: '请选择头像' })
                 return
-              }*/
+              }
 
-              // await this.uploadIamgeToAGC()
-              await this.emailRegister() // 邮箱注册
+
+              await this.emailRegister()
+              // 邮箱注册
+
 
             })
 

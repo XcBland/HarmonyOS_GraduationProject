@@ -7,6 +7,7 @@ struct HmToggle {
   showBorder: boolean = true //是否显示底部的线条
   onRightClick: () => void = () => {
   } //执行的事件
+  @Prop isOn: boolean = false //右边的开关是否打开
 
   build() {
     Row() {
@@ -30,12 +31,14 @@ struct HmToggle {
             .constraintSize({ maxWidth: 150, maxHeight: 20 }) //设置右边内容的最大宽度和高度
         }
         if (this.showRightIcon) {
-          Toggle({type:ToggleType.Switch,isOn:false})
+          Toggle({type:ToggleType.Switch,isOn:this.isOn})
             .selectedColor('#007DFF')
             .switchPointColor('#FFFFFF')
             .onChange((isOn: boolean) => {
-              console.info('Component status:' + isOn)
+              this.isOn = isOn
             })
+
+
           // TODO: 权限控制
         }
       }.onClick(() => {
