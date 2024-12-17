@@ -2,7 +2,7 @@ import { APP_TOP_HEIGHT, TOKEN_KEY } from '../../constants'
 import { font, router } from '@kit.ArkUI'
 import cloud, { Database, DatabaseCollection } from '@hw-agconnect/cloud'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { PhoneLoginDialog } from '../../components/PhoneLoginDialog'
+import { PhoneLoginDialog } from '../../components'
 import { userInfo_01 as userInfo } from '../../enity/userInfo';
 import schema from '../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 /**

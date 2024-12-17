@@ -1,6 +1,6 @@
 import cloud, { AuthUser } from "@hw-agconnect/cloud"
 import { router } from "@kit.ArkUI"
-import { AgUser } from "../../../enity"
+import { AgUser, travel_tips } from "../../../enity"
 import { userInfo_01 as userInfo } from "../../../enity/userInfo"
 
 @Preview
@@ -12,8 +12,12 @@ export struct Mine {
   @State displayName: string = ''
   @StorageLink('user') currentUser:AgUser|undefined = AppStorage.get<AgUser>('user')
   @StorageLink('local_userInfo') data:userInfo = new userInfo()
+  @StorageLink('travelLogue') travelLogue:travel_tips[] = []
+
+
+
   async aboutToAppear(){
-    this.user = await cloud.auth().getCurrentUser()
+    this.user = await cloud.auth().getCurrentUser() // 获取当前用户信息
     if (this.user?.getEmail()){
       this.displayName = this.user.getDisplayName()
       this.phone = this.user.getEmail()
@@ -132,6 +136,7 @@ export struct Mine {
                 .fontSize(14)
                 .fontColor($r('app.color.text_secondary'))
                 .onClick(() => {
+                  // TODO: queryAllTravelLogue
                 })
             }
             .width('90%')
@@ -156,7 +161,9 @@ export struct Mine {
                       .fontSize(14)
                       .fontColor($r('app.color.text_secondary'))
                   }
-                }
+                }.onClick(()=>{
+                  router.pushUrl({url:'pages/Travel/TravelLogue',params:{id:1}})
+                })
 
                 Row() {
                   Image($r('app.media.fengjing2'))

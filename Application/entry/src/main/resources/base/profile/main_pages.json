@@ -18,6 +18,7 @@
     "pages/expansion/travel_program/Travel_Program",
     "pages/expansion/card_coupon/Card_Coupon",
     "pages/expansion/browsing_history/Browsing_History",
-    "pages/home/Mine/MoreMine"
+    "pages/home/Mine/MoreMine",
+    "pages/Travel/TravelLogue"
   ]
 }

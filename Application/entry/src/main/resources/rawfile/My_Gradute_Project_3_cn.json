@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 6,
+  "schemaVersion": 9,
   "permissions": [
     {
       "permissions": [
@@ -73,7 +73,7 @@
           ]
         }
       ],
-      "objectTypeName": "traveLogue"
+      "objectTypeName": "travel_tips"
     }
   ],
   "objectTypes": [
@@ -170,7 +170,7 @@
           ]
         }
       ],
-      "objectTypeName": "traveLogue",
+      "objectTypeName": "travel_tips",
       "fields": [
         {
           "isNeedEncrypt": false,
@@ -178,7 +178,7 @@
           "notNull": true,
           "isSensitive": false,
           "belongPrimaryKey": true,
-          "fieldType": "Integer"
+          "fieldType": "String"
         },
         {
           "isNeedEncrypt": false,
@@ -186,7 +186,15 @@
           "notNull": false,
           "isSensitive": false,
           "belongPrimaryKey": false,
-          "fieldType": "String"
+          "fieldType": "Text"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "subtitle",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "Text"
         },
         {
           "isNeedEncrypt": false,
@@ -194,11 +202,19 @@
           "notNull": false,
           "isSensitive": false,
           "belongPrimaryKey": false,
-          "fieldType": "String"
+          "fieldType": "Text"
         },
         {
           "isNeedEncrypt": false,
           "fieldName": "photoUrl",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "label",
           "notNull": false,
           "isSensitive": false,
           "belongPrimaryKey": false,
@@ -214,7 +230,7 @@
         },
         {
           "isNeedEncrypt": false,
-          "fieldName": "label",
+          "fieldName": "userid",
           "notNull": false,
           "isSensitive": false,
           "belongPrimaryKey": false,

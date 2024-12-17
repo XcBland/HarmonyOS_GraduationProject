@@ -3,59 +3,56 @@ import cloud, { AuthUser, Database, DatabaseCollection } from '@hw-agconnect/clo
  * @Auhtor DLY
  *
  */
-import { AgUser } from '../../../enity'
-import { HmCard, HmNavBar } from '../../../components'
-import { userInfo_01 as userInfo } from '../../../enity/userInfo'
+import {  userInfo_01 as userInfo } from '../../../enity/userInfo'
+import {AgUser } from '../../../enity/AgUser'
+import { HmNavBar, PassWordUpdateDialog, PhoneLinkDialog, PhoneUpdateDialog } from '../../../components'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
-import { PhoneLinkDialog } from '../../../components/PhoneLinkDialog'
-import { PhoneUpdateDialog } from '../../../components/PhoneUpdateDialog'
-import { PassWordUpdateDialog } from '../../../components/PassWordUpdateDialog'
+
 
 @Entry
 @Component
 struct Account_Management {
-  @StorageLink('user') currentUser:AgUser | undefined =
+  @StorageLink('user') currentUser: AgUser | undefined =
     AppStorage.get('user')
   user: AuthUser | null = null
   @State phone: string = ''
   @State verifyCode: string = ''
   @State content: Content[] = [
-    {img:$r('app.media.QQ'),title:'QQ',text:'绑定'},
-    {img:$r('app.media.wechat'),title:'微信',text:'绑定'},
-    {img:$r('app.media.weibo'),title:'微博',text:'绑定'}
+    { img: $r('app.media.QQ'), title: 'QQ', text: '绑定' },
+    { img: $r('app.media.wechat'), title: '微信', text: '绑定' },
+    { img: $r('app.media.weibo'), title: '微博', text: '绑定' }
   ]
-  @StorageLink('local_userInfo') userInfo:userInfo = new userInfo()
+  @StorageLink('local_userInfo') userInfo: userInfo = new userInfo()
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
   private cloudDBZone = 'Graduation';
-  cloudDataBase:DatabaseCollection<userInfo>|undefined = undefined
+  cloudDataBase: DatabaseCollection<userInfo> | undefined = undefined
   // 绑定手机号弹窗
-  phoneController:CustomDialogController = new CustomDialogController({
+  phoneController: CustomDialogController = new CustomDialogController({
     builder: PhoneLinkDialog(),
     autoCancel: true,
     customStyle: true,
-    alignment:DialogAlignment.Center
+    alignment: DialogAlignment.Center
   })
-
   // 修改手机号弹窗
-  phoneUpdateController:CustomDialogController = new CustomDialogController({
+  phoneUpdateController: CustomDialogController = new CustomDialogController({
     builder: PhoneUpdateDialog(),
     autoCancel: true,
     customStyle: true,
-    alignment:DialogAlignment.Center
+    alignment: DialogAlignment.Center
   })
-
   // 修改密码弹窗
-  passwordController:CustomDialogController = new CustomDialogController({
+  passwordController: CustomDialogController = new CustomDialogController({
     builder: PassWordUpdateDialog(),
     autoCancel: true,
     customStyle: true,
-    alignment:DialogAlignment.Center
+    alignment: DialogAlignment.Center
   })
-  async aboutToAppear(){
+
+  async aboutToAppear() {
     this.user = await cloud.auth().getCurrentUser()
-    if (this.user?.getPhone()){
+    if (this.user?.getPhone()) {
       this.phone = this.user.getPhone()
     }
     this.cloudDB = cloud.database({
@@ -66,43 +63,41 @@ struct Account_Management {
     this.userInfo.getPhoneNum()
   }
 
-
-
-
-
   build() {
     Column() {
-      HmNavBar({title: '账号管理'})
-      Column(){
-        Row(){
+      HmNavBar({ title: '账号管理' })
+      Column() {
+        Row() {
           Text('当前登陆账号')
             .fontSize(20)
             .fontColor($r('app.color.text_secondary'))
         }
         .justifyContent(FlexAlign.Start)
         .width('100%')
-        .margin({top:20})
-        Row(){
-          Row({space:5}){
+        .margin({ top: 20 })
+
+        Row() {
+          Row({ space: 5 }) {
             Image($r('app.media.phoneLine'))
               .width(40)
               .aspectRatio(1)
-              .margin({left:5})
+              .margin({ left: 5 })
             Text('手机号')
               .fontSize(20)
               .textAlign(TextAlign.Center)
           }
           .width('30%')
+
           Text(this.userInfo.getPhoneNum() || '未绑定')
             .fontSize(14)
             .fontColor($r('app.color.text_secondary'))
-            .margin({left:20})
+            .margin({ left: 20 })
 
           Blank()
 
 
-          Button(this.userInfo.getPhoneNum()!==''? '修改' : '绑定')
-            .margin({right:5})
+          Button(this.userInfo.getPhoneNum() !== '' ? '修改' : '绑定')
+            .margin({ right: 5 })
             .type(ButtonType.Normal)
             .fontSize(14)
             .backgroundColor('#ff4174ff')
@@ -110,10 +105,10 @@ struct Account_Management {
             .width(60)
             .borderRadius(10)
             .onClick(() => {
-              if(this.phone === ''){
+              if (this.phone === '') {
                 // TODO 绑定手机号
                 this.phoneController.open()
-              }else{
+              } else {
                 // TODO 修改手机号
                 this.phoneUpdateController.open()
               }
@@ -127,18 +122,19 @@ struct Account_Management {
       .width('100%')
       .height(80)
 
-      Column(){
-        Row(){
+      Column() {
+        Row() {
           Text('第三方账户绑定')
             .fontSize(20)
             .fontColor($r('app.color.text_secondary'))
             .textAlign(TextAlign.Center)
         }
         .width('100%')
-        Column(){
-          ForEach(this.content,(item:Content,index:number)=>{
-            Row({space:5}){
-              Row({space:5}){
+
+        Column() {
+          ForEach(this.content, (item: Content, index: number) => {
+            Row({ space: 5 }) {
+              Row({ space: 5 }) {
                 Image(item.img)
                   .width(40)
                   .aspectRatio(1)
@@ -148,6 +144,7 @@ struct Account_Management {
 
               }
               .width('30%')
+
               Button(item.text)
                 .type(ButtonType.Normal)
                 .fontSize(14)
@@ -169,17 +166,18 @@ struct Account_Management {
               .color($r('app.color.text_secondary'))
           })
         }.width('100%')
-      }.width('100%').margin({top:20})
+      }.width('100%').margin({ top: 20 })
 
-      Column(){
-        Row(){
+      Column() {
+        Row() {
           Text('登录安全')
             .fontSize(20)
             .fontColor($r('app.color.text_secondary'))
             .textAlign(TextAlign.Center)
         }.width('100%').justifyContent(FlexAlign.Start)
-        Row(){
-          Row({space:5}){
+
+        Row() {
+          Row({ space: 5 }) {
             Image($r('app.media.lock'))
               .width(40)
               .aspectRatio(1)
@@ -189,6 +187,7 @@ struct Account_Management {
           }
           .width('30%')
           .alignItems(VerticalAlign.Center)
+
           Text('>')
             .fontSize(18)
             .fontColor($r('app.color.text_secondary'))
@@ -204,18 +203,17 @@ struct Account_Management {
         .padding(10)
         .backgroundColor($r('app.color.white'))
       }
-      .margin({top:20})
+      .margin({ top: 20 })
     }
     .backgroundColor($r('app.color.background_page'))
     .width('100%')
     .height('100%')
 
-
   }
 }
 
-interface Content{
-  img:ResourceStr
-  title:string
-  text:string
+interface Content {
+  img: ResourceStr
+  title: string
+  text: string
 }

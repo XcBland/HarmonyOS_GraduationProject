@@ -2,11 +2,10 @@
  * @Auhtor DLY
  *
  */
-import { HmCard, HmCardItem, HmConfirm, HmNavBar } from '../../../components'
+import { RecommendDialog, HmCard, HmCardItem, HmConfirm, HmNavBar } from '../../../components'
 import { router } from '@kit.ArkUI'
 import cloud from '@hw-agconnect/cloud'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { RecommendDialog } from '../../../components/recommendDialog'
 import { TOKEN_KEY } from '../../../constants'
 import { UserSettingClass } from '../../../utils'
 

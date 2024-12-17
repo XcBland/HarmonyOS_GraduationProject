@@ -4,9 +4,8 @@ import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { promptAction, router } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { userInfo_01 as userInfo } from '../../../enity/userInfo';
-import { AgUser } from '../../../enity';
+import {AgUser } from '../../../enity/AgUser'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
-import { userTestParams, userTestParamsModel } from '../../../TextModel/userTestModel';
 import dayjs from '@hview/dayjs';
 
 
@@ -21,7 +20,7 @@ struct MoreMine {
   @State displayName: string = ''; //用户昵称
   @StorageLink('user') currentUser: AgUser | undefined = AppStorage.get<AgUser>('user')
   @StorageLink('local_userInfo') userInfo: userInfo = new userInfo()
-  // 员工列表
+
   @State resultArray: userInfo[]=[]
   // CloudDB API
   private cloudDB: Database | null = null;
@@ -98,7 +97,7 @@ struct MoreMine {
   async query(){
     try{
       this.resultArray = await this.cloudDataBase!.query().get()
-      // promptAction.showToast({message:JSON.parse(JSON.stringify(this.resultArray))})
+      promptAction.showToast({message:JSON.parse(JSON.stringify(this.resultArray))})
     }catch(err){
       console.log("UpdatePersonal.100==>"+JSON.stringify((err)))
     }
@@ -267,6 +266,11 @@ struct MoreMine {
           .width('50%')
           .borderRadius(100)
           .margin({top: 100, bottom: 20})
+
+/*        Button('查询')
+          .onClick(async ()=>{
+            await this.query()
+          })*/
       }
     }
     .width('100%')

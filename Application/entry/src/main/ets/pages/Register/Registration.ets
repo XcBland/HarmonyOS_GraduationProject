@@ -3,12 +3,9 @@ import { UserInfo } from '@hw-agconnect/auth-ohos/src/main/ets/entity/UserInfo'
 import cloud, { AuthUser, Database, DatabaseCollection, Storage } from '@hw-agconnect/cloud'
 import schema from '../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { promptAction, router } from '@kit.ArkUI'
-import { AgUser } from '../../enity'
-import { HmNavBar } from '../../components'
-import { PhoneRegisterDialog } from '../../components/PhoneRegisterDialog'
 import { userInfo_01 as userInfo } from '../../enity/userInfo'
-import { TOKEN_KEY } from '../../constants'
-import { BusinessError } from '@kit.BasicServicesKit'
+import { HmNavBar, PhoneRegisterDialog } from '../../components'
+import {AgUser } from '../../enity/AgUser'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
 
 
@@ -79,34 +76,33 @@ struct Registration {
   /**
    * 上传图片到云存储
    */
-  async uploadIamgeToAGC(){
+  async uploadIamgeToAGC() {
     try {
       let extName = this.photoUrl!.split('.').pop();
       let fileName = `${Date.now()}.${extName}`;
       this.cloudPath = `myProjectImage/myAvcator/${fileName}`
       let result = await this.storage.upload({
         localPath: this.photoUrl,
-        cloudPath:this.cloudPath
+        cloudPath: this.cloudPath
       })
-      if(result.bytesTransferred===result.totalByteCount){
+      if (result.bytesTransferred === result.totalByteCount) {
         promptAction.showToast({ message: '图片上传成功！' })
         return true;
-      }else{
+      } else {
         promptAction.showToast({ message: '图片上传失败！' })
         return false;
       }
-    }catch (e){
+    } catch (e) {
       console.error('hmlog-->', 'uploadImageToAGC Failed. Err:', JSON.stringify(e))
       promptAction.showToast({ message: '上传图片异常' })
       return false
     }
   }
 
-
   /**
    * 获取云存储文件路径
    */
-  async getAGCFileUri(){
+  async getAGCFileUri() {
     let imgUri = await this.storage.getDownloadURL(this.cloudPath)
     this.photoUrl = imgUri
     promptAction.showToast({ message: '获取图片路径成功！' })
@@ -124,11 +120,11 @@ struct Registration {
       })
       let user = signInResult.getUser()
       cloud.auth().getCurrentUser().then(async (user) => {
-        if (user){
+        if (user) {
           this.authUser = user
           await user.getToken(false)
           await this.addUser(this.authUser) // 云数据库存储用户信息
-          await this.uploadIamgeToAGC()     // 上传图片到云存储
+          await this.uploadIamgeToAGC() // 上传图片到云存储
         }
       })
       user.updateProfile({
