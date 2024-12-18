@@ -1,12 +1,13 @@
 import { abilityAccessCtrl, AbilityConstant, PermissionRequestResult, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { window } from '@kit.ArkUI';
+import { font, window } from '@kit.ArkUI';
 import { initialize } from '@hw-agconnect/hmcore';
 import json from '../../resources/rawfile/app-schema.json';
 import cloud from '@hw-agconnect/cloud';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+
     try {
       initialize(this.context, json);
       console.info('hmlog-->','AGConnectSuccessed!')

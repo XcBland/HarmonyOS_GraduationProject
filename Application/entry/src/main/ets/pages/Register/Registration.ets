@@ -46,7 +46,7 @@ struct Registration {
     })
     this.cloudDataBase = this.cloudDB?.collection<userInfo>(userInfo)
   }
-
+  // 手机注册弹窗
   phoneRegisterDialog: CustomDialogController = new CustomDialogController({
     builder: PhoneRegisterDialog(),
     customStyle: true,
@@ -54,6 +54,7 @@ struct Registration {
     autoCancel: true
   })
 
+  // 获取AgUser
   async getAgUser(user: AuthUser) {
     let userExtra = await user.getUserExtra()
     let agUser = new AgUser(user.getUid(), user.getPhotoUrl(), user.getEmail(), user.getDisplayName(),

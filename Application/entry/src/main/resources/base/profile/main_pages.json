@@ -19,6 +19,8 @@
     "pages/expansion/card_coupon/Card_Coupon",
     "pages/expansion/browsing_history/Browsing_History",
     "pages/home/Mine/MoreMine",
-    "pages/Travel/TravelLogue"
+    "pages/Travel/TravelLogue",
+    "pages/home/Hotel/HotelDetail/HotelDetail",
+    "pages/Travel/UpdateTravelLog/UpdateTravelLog"
   ]
 }

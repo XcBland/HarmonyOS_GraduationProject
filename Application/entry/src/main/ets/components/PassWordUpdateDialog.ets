@@ -26,11 +26,11 @@ export struct passwordUpdateDialog {
           promptAction.showToast({ message: '密码修改成功' })
           this.passwordUpdate.close()
           this.userInstance.logOut()
-          router.replaceUrl({url:'pages/Login/LoginIndex'})
+          router.replaceUrl({ url: 'pages/Login/LoginIndex' })
         })
-        .catch((error:BusinessError) => {
-           promptAction.showToast({ message: error.message })
-          console.error("update password error33: "+error.message)
+        .catch((error: BusinessError) => {
+          promptAction.showToast({ message: error.message })
+          console.error("update password error33: " + error.message)
         })
     }).finally(() => {
       this.passwordUpdate.close()
@@ -52,7 +52,8 @@ export struct passwordUpdateDialog {
             this.password = value
           })
           .width('100%')
-          .backgroundColor($r('app.color.white')).height(40)
+          .backgroundColor($r('app.color.white'))
+          .height(40)
       }.margin({ top: 20 }).width('90%').borderWidth(1)
 
       Row() {
@@ -62,7 +63,8 @@ export struct passwordUpdateDialog {
             this.confirmPassword = value
           })
           .width('100%')
-          .backgroundColor($r('app.color.white')).height(40)
+          .backgroundColor($r('app.color.white'))
+          .height(40)
       }.margin({ top: 20 }).width('90%').borderWidth(1)
 
       Row() {
@@ -131,7 +133,7 @@ export struct PassWordUpdateDialog {
       Row() {
         Text('邮 箱  ' + this.userInfo.getEmail())
           .width('90%')
-          .backgroundColor($r('app.color.white')).height(40).margin({left:15})
+          .backgroundColor($r('app.color.white')).height(40).margin({ left: 15 })
       }
       .width('90%')
       .height(40)
@@ -146,7 +148,8 @@ export struct PassWordUpdateDialog {
             this.password = value
           })
           .width('100%')
-          .backgroundColor($r('app.color.white')).height(40)
+          .backgroundColor($r('app.color.white'))
+          .height(40)
       }
       .width('90%')
       .height(40)

@@ -12,7 +12,7 @@ class travel_tips {
         this.photoUrl = undefined;
         this.label = undefined;
         this.publishTime = undefined;
-        this.userid = undefined;
+        this.userId = undefined;
     }
 
     setId(id) {
@@ -71,12 +71,12 @@ class travel_tips {
         return this.publishTime;
     }
 
-    setUserid(userid) {
-        this.userid = userid;
+    setUserId(userId) {
+        this.userId = userId;
     }
 
-    getUserid() {
-        return this.userid;
+    getUserId() {
+        return this.userId;
     }
 }
 

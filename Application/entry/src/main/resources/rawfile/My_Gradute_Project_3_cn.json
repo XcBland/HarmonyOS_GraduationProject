@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 9,
+  "schemaVersion": 15,
   "permissions": [
     {
       "permissions": [
@@ -74,6 +74,43 @@
         }
       ],
       "objectTypeName": "travel_tips"
+    },
+    {
+      "permissions": [
+        {
+          "role": "World",
+          "rights": [
+            "Read",
+            "Upsert",
+            "Delete"
+          ]
+        },
+        {
+          "role": "Authenticated",
+          "rights": [
+            "Read",
+            "Upsert",
+            "Delete"
+          ]
+        },
+        {
+          "role": "Creator",
+          "rights": [
+            "Read",
+            "Upsert",
+            "Delete"
+          ]
+        },
+        {
+          "role": "Administrator",
+          "rights": [
+            "Read",
+            "Upsert",
+            "Delete"
+          ]
+        }
+      ],
+      "objectTypeName": "hotel"
     }
   ],
   "objectTypes": [
@@ -178,7 +215,7 @@
           "notNull": true,
           "isSensitive": false,
           "belongPrimaryKey": true,
-          "fieldType": "String"
+          "fieldType": "IntAutoIncrement"
         },
         {
           "isNeedEncrypt": false,
@@ -186,7 +223,7 @@
           "notNull": false,
           "isSensitive": false,
           "belongPrimaryKey": false,
-          "fieldType": "Text"
+          "fieldType": "String"
         },
         {
           "isNeedEncrypt": false,
@@ -194,7 +231,7 @@
           "notNull": false,
           "isSensitive": false,
           "belongPrimaryKey": false,
-          "fieldType": "Text"
+          "fieldType": "String"
         },
         {
           "isNeedEncrypt": false,
@@ -230,7 +267,96 @@
         },
         {
           "isNeedEncrypt": false,
-          "fieldName": "userid",
+          "fieldName": "userId",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        }
+      ]
+    },
+    {
+      "indexes": [
+        {
+          "indexName": "id",
+          "indexList": [
+            {
+              "fieldName": "id",
+              "sortType": "ASC"
+            }
+          ]
+        },
+        {
+          "indexName": "prices",
+          "indexList": [
+            {
+              "fieldName": "prices",
+              "sortType": "ASC"
+            }
+          ]
+        }
+      ],
+      "objectTypeName": "hotel",
+      "fields": [
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "id",
+          "notNull": true,
+          "isSensitive": false,
+          "belongPrimaryKey": true,
+          "fieldType": "IntAutoIncrement"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "hotelName",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "hotelPhoto",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "website",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "synopsis",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "Text"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "prices",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "address",
+          "notNull": false,
+          "isSensitive": false,
+          "belongPrimaryKey": false,
+          "fieldType": "String"
+        },
+        {
+          "isNeedEncrypt": false,
+          "fieldName": "schedulePhone",
           "notNull": false,
           "isSensitive": false,
           "belongPrimaryKey": false,

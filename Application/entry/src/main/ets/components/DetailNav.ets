@@ -1,11 +1,14 @@
 import { router } from '@kit.ArkUI'
-import { HmConfirm } from '.'
 
 @Preview
 @Component
 export struct HmDetailNav {
   @State title: string = "测试"
   showBackIcon: boolean = true
+  onDeleteClick: () => void = () => {
+  }
+  onRouterClick: () => void = () => {
+  }
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
@@ -18,16 +21,34 @@ export struct HmDetailNav {
             .fontWeight(FontWeight.Bold)
             .alignSelf(ItemAlign.Center)
             .align(Alignment.Center)
-            .margin({left:150})
+            .margin({ left: 150 })
             .layoutWeight(1)
         }
 
-        Row(){
+        Row() {
           Image($r('app.media.trash'))
             .width(34)
             .height(34)
             .onClick(() => {
-              AlertDialog.show({message:"确定删除吗？"})
+              AlertDialog.show({
+                message: "确定删除吗？",
+                primaryButton: {
+                  value: 'cancel',
+                  action: () => {
+
+                  }
+                },
+                secondaryButton: {
+                  enabled: true,
+                  defaultFocus: true,
+                  style: DialogButtonStyle.HIGHLIGHT,
+                  value: 'ok',
+                  action: () => {
+                    this.onDeleteClick()
+                    router.replaceUrl({url:'pages/home/Index'})
+                  }
+                },
+              })
             })
           Image($r('app.media.write'))
             .width(34)
@@ -39,7 +60,6 @@ export struct HmDetailNav {
       .alignItems(VerticalAlign.Center)
       .width('100%')
       .height("100%")
-
 
 
       if (this.showBackIcon === true) {
