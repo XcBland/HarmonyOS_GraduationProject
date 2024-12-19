@@ -8,7 +8,6 @@ import { HmDetailNav } from '../../components/DetailNav'
 import { travel_tips } from '../../enity/travel_tips'
 import { font, promptAction, router } from '@kit.ArkUI'
 import CommonRouterParams from '../../models/router'
-import { ValueType } from '@kit.ArkData'
 import { Label } from '../../enity/labelArray'
 import { ImageList } from '../../enity/ImageList'
 
@@ -16,7 +15,8 @@ import { ImageList } from '../../enity/ImageList'
 @Component
 struct TravelLogue {
   @State travelLogue: travel_tips[] = []
-  @State imgList: ImageList[] = []
+  // @State imgList: ImageList[] = []
+  @State selectIndex: number = 0 // 选中的图片索引
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
@@ -48,18 +48,17 @@ struct TravelLogue {
 
   // 删除
   async deleteById() {
-    try{
-      let tip:travel_tips = new travel_tips()
+    try {
+      let tip: travel_tips = new travel_tips()
       tip.id = this.travelLogue[0].id
       let result = await this.cloudDataBase!.delete(tip)
       promptAction.showToast({ message: '删除成功' })
       // TODO: 通信刷新
 
-    }catch(e){
+    } catch (e) {
       promptAction.showToast({ message: e.message })
     }
   }
-
 
   build() {
     Column() {
@@ -83,22 +82,26 @@ struct TravelLogue {
                 .width('100%')
                 .textAlign(TextAlign.Center)
                 .margin({ top: 20 })
-              Row(){
-                ForEach((JSON.parse(item.photoUrl)as ImageList[]),(item:ImageList,index)=>{
-                  Image(item.url)
-                    .width(150)
-                    .height(150)
-                    .borderRadius(10)
+              List() {
+                ForEach((JSON.parse(item.photoUrl) as ImageList[]), (item: ImageList, index: number) => {
+                  ListItem() {
+                    Image(item.url)
+                      .width(150)
+                      .height(150)
+                      .borderRadius(10)
+                  }
                 })
               }
+              .listDirection(Axis.Horizontal) // 列表方向: 水平
               Text(item.content)
                 .fontSize(20)
                 .fontColor($r('app.color.text_primary'))
                 .fontFamily('queen')
                 .lineHeight(25)
 
-              Row({space: 5}) {
-                ForEach((JSON.parse(item.label) as Label[]),(item:Label,index)=>{
+
+              Row({ space: 5 }) {
+                ForEach((JSON.parse(item.label) as Label[]), (item: Label, index) => {
                   Text(item.labels)
                     .fontSize(16)
                     .backgroundColor('#ff6a7efd')

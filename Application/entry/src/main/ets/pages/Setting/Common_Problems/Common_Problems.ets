@@ -34,13 +34,14 @@ struct RobotTalking {
 
   //生命周期
   async aboutToAppear() {
+    this.user = await cloud.auth().getCurrentUser()
     //调方法获取消息列表
     this.messageList = await this.messageModel.getMessageList()
 
     //追加:客服回复消息
     this.messageList.push({
       id: util.generateRandomUUID(), //自动生成一个唯一的标识:字母和数字的组合
-      avatar: $r('app.media.user_dark'),
+      avatar: $r('app.media.xiaoai'),
       userName: '机器人小艾',
       content: '您好,我是机器人小艾,很高兴为您服务,请问有什么可以帮助您？',
       timestamp: Date.now(),
@@ -81,7 +82,7 @@ struct RobotTalking {
       //追加:机器人回复消息
       this.messageList.push({
         id: util.generateRandomUUID(), //自动生成一个唯一的标识:字母和数字的组合
-        avatar: $r('app.media.user_dark'),
+        avatar: $r('app.media.xiaoai'),
         userName: '机器人小艾',
         content: str,
         timestamp: Date.now(),

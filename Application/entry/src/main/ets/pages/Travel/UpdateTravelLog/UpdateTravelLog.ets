@@ -3,7 +3,7 @@
  *
  */
 import cloud, { AuthUser, Database, DatabaseCollection } from '@hw-agconnect/cloud'
-import { HmNavBar } from '../../../components'
+import { HmNavBar, HmPreview } from '../../../components'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { travel_tips as travelLog } from '../../../enity/travel_tips'
 import { ImageList, Label } from '../../../enity'
@@ -24,13 +24,26 @@ struct UpdateTravelLog {
   @State content: string = '' // 内容输入框内容
   @State photoUrl: string = '' // 图片路径
   @State cloudPath: string = '' // 云存储路径
+  @State selectIndex: number = 0 // 选中的图片索引
   storage = cloud.storage() // 云存储实例
+  maxSelected: number = 6 // 最大选择图片数
   user: AuthUser | null = null
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
   private cloudDBZone = 'Graduation';
   cloudDataBase: DatabaseCollection<travelLog> | null = null
+
+
+  preview: CustomDialogController = new CustomDialogController({
+    builder: HmPreview({
+      urls: this.imageList.map(item => item.url), // 图片数组
+      selectIndex: this.selectIndex // 默认选中第一张图片
+    }),
+    customStyle: true, // 自定义样式
+    alignment: DialogAlignment.Center, // 居中显示
+    autoCancel: true                // 点击空白处自动关闭弹窗
+  })
 
   async aboutToAppear() {
     this.user = await cloud.auth()?.getCurrentUser()
@@ -40,6 +53,8 @@ struct UpdateTravelLog {
     })
     this.cloudDataBase = this.cloudDB.collection<travelLog>(travelLog) // 获取云数据库的集合
   }
+
+
 
   // 上传旅游日志
   async uploadTravelLog(title: string, content: string
@@ -53,7 +68,7 @@ struct UpdateTravelLog {
       traveLog.subtitle = subTitle
       traveLog.photoUrl = JSON.stringify(imageList)
       traveLog.publishTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
-      traveLog.userId = this.user?.getUid()
+      traveLog.userid = this.user?.getUid()
       await this.cloudDataBase?.upsert(traveLog)
       this.labelList = []
       this.imageList = []
@@ -62,7 +77,7 @@ struct UpdateTravelLog {
       this.content = ''
       this.label = ''
       this.photoUrl = ''
-      router.replaceUrl({url:'pages/home/Index'})
+      router.replaceUrl({ url: 'pages/home/Index' })
     } catch (e) {
       console.error('uploadTravelLog error:' + e.message)
     }
@@ -109,187 +124,215 @@ struct UpdateTravelLog {
   /**
    * 获取云存储文件路径
    */
-  async getAGCFileUri(){
+  async getAGCFileUri() {
     let imgUri = await this.storage.getDownloadURL(this.cloudPath)
     this.photoUrl = imgUri
     return imgUri
   }
 
   build() {
-    Column({ space: 20 }) {
-      HmNavBar({ title: '发布攻略' })
-      TextInput({ placeholder: '好的标题能够吸引更多的驴友哦~' })
-        .onChange((value) => {
-          this.title = value
-        })
-        .width('95%')
-        .align(Alignment.Center)
-        .padding(10)
-        .backgroundColor($r('app.color.white'))
-        .borderWidth({ bottom: 1 })
-        .borderRadius(5)
-      Column() {
-        TextArea({ placeholder: '写下你的游记吧~' })
-          .onChange((value) => {
-            this.content = value
-          })
-          .backgroundColor($r('app.color.white'))
-      }
-      .borderWidth({ bottom: 1 })
-      .borderRadius(5)
-      .backgroundColor($r('app.color.white'))
-      .width('95%')
-      .height(300)
-
-      Row({ space: 5 }) {
-        Image($r('app.media.label'))
-          .width(14)
-          .aspectRatio(1)
-        Text('添加话题')
-          .fontSize(16)
-        Blank()
-        Text('>')
-          .fontSize(16)
-      }
-      .borderRadius(5)
-      .alignItems(VerticalAlign.Center)
-      .width('95%')
-      .backgroundColor($r('app.color.white'))
-      .padding(10)
-
-      Column() {
-        Row() {
-          ForEach(this.labelList, (item: Label, index: number) => {
-            Row() {
-              Text(item.labels)
-                .fontSize(14)
-                .fontColor('#ff00c4ff')
-                .border({ width: 1, color: '#ff00c4ff' })
-                .padding({
-                  left: 15,
-                  right: 15,
-                  top: 5,
-                  bottom: 5
-                })
-                .borderRadius(10)
-                .onClick(() => {
-                  this.labelList.splice(index, 1) // 删除标签
-                })
-            }
-          })
-          Row({ space: 10 }) {
-            TextInput({ placeholder: '添加话题', text: this.label })
-              .width('auto')
-              .backgroundColor($r('app.color.white'))
-              .onChange((value) => {
-                this.label = value
-              })
-            Text('+')
-              .fontSize(20)
-              .backgroundColor($r('app.color.white'))
-              .width(20)
-              .height(20)
-              .borderWidth(1)
-              .textAlign(TextAlign.Center)
-              .borderRadius(50)
-              .onClick(() => {
-                if (this.label === '') {
-                  promptAction.showToast({ message: '请输入话题标签' })
-                  return
-                }
-                // 如果话题标签内没有'#',则不允许添加
-                if (this.label.indexOf('#') === -1) {
-                  promptAction.showToast({ message: '话题标签必须以#开头' })
-                  this.label = ''
-                  return
-                }
-                // 如果话题标签内已经存在该标签，则不允许添加
-                this.labelList.forEach((item: Label) => {
-                  if (item.labels === this.label) {
-                    promptAction.showToast({ message: '话题标签已存在,请勿重复添加' })
-                    this.label = ''
-                    return
-                  }
-                })
-                if (this.label !== '') {
-                  this.labelList.push({ labels: this.label })
-                }
-                this.label = ''
-              })
-          }
-          .margin({ left: 10 })
-          .alignItems(VerticalAlign.Center)
-
-
-        }.width('100%')
-        .padding({ left: 10, right: 10 })
-      }
-
-      Row({ space: 5 }) {
-        Text('添加图片')
-          .fontSize(16)
-        Text('>')
-          .fontSize(16)
-      }
-      .borderRadius(5)
-      .justifyContent(FlexAlign.SpaceBetween)
-      .backgroundColor($r('app.color.white'))
-      .alignItems(VerticalAlign.Center)
-      .width('95%')
-      .padding(10)
-
-      Column() {
-        Row() {
-          ForEach(this.imageList, (item: ImageList, index: number) => {
-            Image(item.url)
-              .width(100)
-              .height(100)
-              .borderRadius(10)
-              .border({ width: 1, color: '#ff00c4ff' })
-              .onClick(() => {
-                this.imageList.splice(index, 1) // 删除图片
-              })
-          })
-
-          Text('+')
-            .backgroundColor($r('app.color.white'))
-            .fontSize(20)
-            .width(100)
-            .height(100)
-            .borderRadius(10)
-            .borderWidth(1)
-            .textAlign(TextAlign.Center)
-            .onClick(() => {
-              this.selectPhoto()
-                .then((url) => {
-                  this.photoUrl = url
-                  this.imageList.push({ url: this.photoUrl })
-                  this.uploadIamgeToAGC()
-                    .then(async () => {
-                      await this.getAGCFileUri()
-                      this.cloudImgList.push({ url:this.photoUrl })
-                    })
-                })
+    List() {
+      ListItem() {
+        Column({ space: 20 }) {
+          HmNavBar({ title: '发布攻略' })
+          TextInput({ placeholder: '好的攻略标题才能让人眼前一亮' })
+            .onChange((value) => {
+              this.title = value
             })
+            .width('95%')
+            .align(Alignment.Center)
+            .padding(10)
+            .backgroundColor($r('app.color.white'))
+            .borderWidth({ bottom: 1 })
+            .borderRadius(5)
+          Column() {
+            TextArea({ placeholder: '写下你的攻略内容吧~' })
+              .onChange((value) => {
+                this.content = value
+              })
+              .backgroundColor($r('app.color.white'))
+          }
+          .borderWidth({ bottom: 1 })
+          .borderRadius(5)
+          .backgroundColor($r('app.color.white'))
+          .width('95%')
+          .height(300)
+
+          Row({ space: 5 }) {
+            Image($r('app.media.label'))
+              .width(14)
+              .aspectRatio(1)
+            Text('添加话题')
+              .fontSize(16)
+            Blank()
+            Text('>')
+              .fontSize(16)
+          }
+          .borderRadius(5)
+          .alignItems(VerticalAlign.Center)
+          .width('95%')
+          .backgroundColor($r('app.color.white'))
+          .padding(10)
+
+          Column() {
+            Row() {
+              ForEach(this.labelList, (item: Label, index: number) => {
+                Row() {
+                  Text(item.labels)
+                    .fontSize(14)
+                    .fontColor('#ff00c4ff')
+                    .border({ width: 1, color: '#ff00c4ff' })
+                    .padding({
+                      left: 15,
+                      right: 15,
+                      top: 5,
+                      bottom: 5
+                    })
+                    .borderRadius(10)
+                    .onClick(() => {
+                      this.labelList.splice(index, 1) // 删除标签
+                    })
+                }
+              })
+              Row({ space: 10 }) {
+                TextInput({ placeholder: '添加话题', text: this.label })
+                  .width('auto')
+                  .backgroundColor($r('app.color.white'))
+                  .onChange((value) => {
+                    this.label = value
+                  })
+                Text('+')
+                  .fontSize(20)
+                  .backgroundColor($r('app.color.white'))
+                  .width(20)
+                  .height(20)
+                  .borderWidth(1)
+                  .textAlign(TextAlign.Center)
+                  .borderRadius(50)
+                  .onClick(() => {
+                    if (this.label === '') {
+                      promptAction.showToast({ message: '请输入话题标签' })
+                      return
+                    }
+                    // 如果话题标签内没有'#',则不允许添加
+                    if (this.label.indexOf('#') === -1) {
+                      promptAction.showToast({ message: '话题标签必须以#开头' })
+                      this.label = ''
+                      return
+                    }
+                    // 如果话题标签内已经存在该标签，则不允许添加
+                    this.labelList.forEach((item: Label) => {
+                      if (item.labels === this.label) {
+                        promptAction.showToast({ message: '话题标签已存在,请勿重复添加' })
+                        this.label = ''
+                        return
+                      }
+                    })
+                    if (this.label !== '') {
+                      this.labelList.push({ labels: this.label })
+                    }
+                    this.label = ''
+                  })
+              }
+              .margin({ left: 10 })
+              .alignItems(VerticalAlign.Center)
+
+            }.width('100%')
+            .padding({ left: 10, right: 10 })
+          }
+
+          Row({ space: 5 }) {
+            Text('添加图片')
+              .fontSize(16)
+            Text('>')
+              .fontSize(16)
+          }
+          .borderRadius(5)
+          .justifyContent(FlexAlign.SpaceBetween)
+          .backgroundColor($r('app.color.white'))
+          .alignItems(VerticalAlign.Center)
+          .width('95%')
+          .padding(10)
+
+          Grid() {
+            ForEach(this.imageList, (item: ImageList, index: number) => {
+              GridItem() {
+                Stack({ alignContent: Alignment.TopEnd }) {
+                  Image(item.url)
+                    .width(95)
+                    .height(95)
+                    .aspectRatio(1)
+                    .borderRadius(4)
+                    .onClick(() => {
+                      // 打开弹窗,预览图片
+                      this.selectIndex = index
+                      this.preview.open()
+                    })
+
+                  Image($r('app.media.ic_btn_delete'))
+                    .width(24)
+                    .height(24)
+                    .aspectRatio(1)
+                    .onClick(() => {
+                      this.imageList.splice(index, 1)
+                      this.cloudImgList.splice(index, 1)
+                    })
+
+                }
+
+              }
+            })
+            if (this.imageList.length < this.maxSelected) {
+              GridItem() {
+                Row() {
+                  Image($r('app.media.ic_add_img'))
+                    .width(24)
+                    .height(24)
+                    .border({ style: BorderStyle.Dotted, width: 1, color: $r('app.color.text_secondary') })
+                    .onClick(() => {
+                      this.selectPhoto()
+                        .then(async (url) => {
+                          if (url) {
+                            this.photoUrl = url
+                            this.imageList.push({ url: this.photoUrl })
+                            await this.uploadIamgeToAGC()
+                              .then(async () => {
+                                await this.getAGCFileUri()
+                                this.cloudImgList.push({ url: this.photoUrl })
+                              })
+                          }
+                        })
+                    })
+                }
+                .width(95)
+                .height(95)
+                .backgroundColor($r('app.color.background_page'))
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+              }
+              .width(95)
+              .height(95)
+
+            }
+          }
+          .columnsTemplate('1fr 1fr 1fr')
+          .columnsGap(10)
+          .rowsGap(10)
+
+          Button('发布')
+            .onClick(() => {
+              this.uploadTravelLog(this.title, this.content, this.labelList, '', this.cloudImgList)
+              promptAction.showToast({ message: '发布成功' })
+            })
+            .type(ButtonType.Normal)
+            .width('80%')
+            .alignSelf(ItemAlign.Center)
+            .borderRadius(10)
+            .backgroundColor($r('app.color.primary'))
+            .fontColor($r('app.color.white'))
+          Row().width('100%').height(30)
         }
-        .width('100%')
-
-
-
       }
-      .margin({ left: 10 })
-      Button('发布')
-        .onClick(() => {
-          this.uploadTravelLog(this.title, this.content, this.labelList, '', this.cloudImgList)
-          promptAction.showToast({ message: '发布成功' })
-        })
-        .type(ButtonType.Normal)
-        .width('80%')
-        .alignSelf(ItemAlign.Center)
-        .borderRadius(10)
-        .backgroundColor($r('app.color.primary'))
-        .fontColor($r('app.color.white'))
-      Row().width('100%').height(30)
     }
     .width('100%')
     .height('100%')

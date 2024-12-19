@@ -4,6 +4,7 @@ import { travel_tips } from '../../../enity/travel_tips'
 import { userInfo_01 as userInfo } from '../../../enity/userInfo'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { ImageList } from '../../../enity/ImageList'
+import { travel_notes } from '../../../enity/travel_notes'
 
 @Preview
 @Component
@@ -15,11 +16,13 @@ export struct Mine {
   // @StorageLink('user') currentUser: AgUser | undefined = AppStorage.get<AgUser>('user')
   @StorageLink('local_userInfo') data: userInfo = new userInfo()
   @StorageLink('travelLogue') travelLogue: travel_tips[] = []
+  @StorageLink('travelNotes') travelNotes: travel_notes[] = []
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
   private cloudDBZone = 'Graduation';
-  cloudDataBase: DatabaseCollection<travel_tips> | null = null
+  cloudDataBase1: DatabaseCollection<travel_tips> | null = null
+  cloudDataBase2: DatabaseCollection<travel_notes> | null = null
 
   async aboutToAppear() {
     this.user = await cloud.auth().getCurrentUser() // 获取当前用户信息
@@ -32,7 +35,8 @@ export struct Mine {
       objectTypeInfo: schema,
       zoneName: this.cloudDBZone,
     })
-    this.cloudDataBase = this.cloudDB.collection<travel_tips>(travel_tips) // 获取云数据库的集合
+    this.cloudDataBase1 = this.cloudDB.collection<travel_tips>(travel_tips) // 获取云数据库的集合
+    this.cloudDataBase2 = this.cloudDB.collection<travel_notes>(travel_notes) // 获取云数据库的集合
     await this.queryAllTravelLogue() // 查询数据库
   }
 
@@ -41,9 +45,68 @@ export struct Mine {
   // 查询数据库
   async queryAllTravelLogue() {
     try {
-      this.travelLogue = await this.cloudDataBase!.query().get()
+      this.travelLogue = await this.cloudDataBase1!.query().get()
+      this.travelNotes = await this.cloudDataBase2!.query().get()
     } catch (e) {
       promptAction.showToast({ message: e.message })
+    }
+  }
+
+  // 获取旅游攻略数据
+  @Builder
+  getTravelTips() {
+    Row() {
+      ForEach(this.travelLogue, (item: travel_tips, index: number) => {
+        Row() {
+          Image((JSON.parse(item.getPhotoUrl()) as ImageList[])[0].url
+            ||
+          $r('app.media.fengjing2'))
+            .height(130)
+            .borderRadius(10)
+            .aspectRatio(1)
+            .margin(10)
+          Column({ space: 5 }) {
+            Text(item.getTitle())
+              .fontSize(14)
+              .fontColor($r('app.color.text_primary'))
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .maxLines(1)
+            Blank()
+            Text(item.getContent())
+              .fontSize(12)
+              .fontColor($r('app.color.text_secondary'))
+              .maxLines(4)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+          }
+          .width('40%')
+          .justifyContent(FlexAlign.Start)
+          .alignItems(HorizontalAlign.Start)
+        }.onClick(() => {
+          router.pushUrl({ url: 'pages/Travel/TravelLogue', params: { id: item.getId() } })
+        })
+      })
+    }
+  }
+
+  // 获取旅游手记数据
+  @Builder
+  getTravelNotes() {
+    Row() {
+      ForEach(this.travelNotes, (item: travel_notes, index: number) => {
+        Row() {
+          Image((JSON.parse(item.getPhotoUrl()) as ImageList[])[0].url
+            ||
+          $r('app.media.fengjing2'))
+            .height(130)
+            .borderRadius(10)
+            .aspectRatio(1)
+            .margin(10)
+        }.onClick(() => {
+          // router.pushUrl({ url: 'pages/Travel/TravelLogue', params: { id: item.getId() } })
+          //TODO: 待实现
+        })
+
+      })
     }
   }
 
@@ -166,38 +229,9 @@ export struct Mine {
             .margin(10)
             .justifyContent(FlexAlign.SpaceBetween)
 
+            // 获取旅游攻略数据
             Scroll() {
-              Row() {
-                ForEach(this.travelLogue, (item: travel_tips, index: number) => {
-                  Row() {
-                    Image((JSON.parse(item.getPhotoUrl()) as ImageList[])[0].url
-                      ||
-                    $r('app.media.fengjing2'))
-                      .height(130)
-                      .borderRadius(10)
-                      .aspectRatio(1)
-                      .margin(10)
-                    Column({ space: 5 }) {
-                      Text(item.getTitle())
-                        .fontSize(14)
-                        .fontColor($r('app.color.text_primary'))
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                        .maxLines(1)
-                      Blank()
-                      Text(item.getContent())
-                        .fontSize(12)
-                        .fontColor($r('app.color.text_secondary'))
-                        .maxLines(4)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                    }
-                    .width('40%')
-                    .justifyContent(FlexAlign.Start)
-                    .alignItems(HorizontalAlign.Start)
-                  }.onClick(() => {
-                    router.pushUrl({ url: 'pages/Travel/TravelLogue', params: { id: item.getId() } })
-                  })
-                })
-              }
+              this.getTravelTips()
             }
             .scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
 
@@ -212,6 +246,7 @@ export struct Mine {
                 .fontSize(14)
                 .fontColor($r('app.color.text_secondary'))
                 .onClick(() => {
+                  // TODO: queryAllTravelLogue
                 })
             }
             .width('90%')
@@ -219,43 +254,7 @@ export struct Mine {
             .justifyContent(FlexAlign.SpaceBetween)
 
             Scroll() {
-              Row() {
-                Row() {
-                  Image($r('app.media.fengjing2'))
-                    .height(150)
-                    .borderRadius(10)
-                    .aspectRatio(1)
-                    .margin(10)
-                    .onClick(() => {
-                    })
-                  Column() {
-                    Text('济州岛|去不会腻的神仙地方')
-                      .fontSize(16)
-                      .fontColor($r('app.color.text_primary'))
-                    Text('aasdadadasdasdasdasd')
-                      .fontSize(14)
-                      .fontColor($r('app.color.text_secondary'))
-                  }
-                }
-
-                Row() {
-                  Image($r('app.media.fengjing2'))
-                    .height(150)
-                    .borderRadius(10)
-                    .aspectRatio(1)
-                    .margin(10)
-                    .onClick(() => {
-                    })
-                  Column() {
-                    Text('济州岛|去不会腻的神仙地方')
-                      .fontSize(16)
-                      .fontColor($r('app.color.text_primary'))
-                    Text('aasdadadasdasdasdasd')
-                      .fontSize(14)
-                      .fontColor($r('app.color.text_secondary'))
-                  }
-                }
-              }
+              this.getTravelNotes()
             }
             .scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
 

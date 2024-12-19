@@ -38,7 +38,7 @@ export struct Add {
             .backgroundColor('#4CAF50')
             .borderRadius(10)
             .onClick(() => {
-              router.pushUrl({ url: 'pages/Travel/TravelNote/TravelNote' })
+              router.pushUrl({ url: 'pages/Travel/UploadTravelNote/UploadTravelNote' })
             })
         }
         .width('80%')
