@@ -5,6 +5,7 @@ import { userInfo_01 as userInfo } from '../../../enity/userInfo'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { ImageList } from '../../../enity/ImageList'
 import { travel_notes } from '../../../enity/travel_notes'
+import UserModel from '../../../models/UserModel'
 
 @Preview
 @Component
@@ -17,6 +18,7 @@ export struct Mine {
   @StorageLink('local_userInfo') data: userInfo = new userInfo()
   @StorageLink('travelLogue') travelLogue: travel_tips[] = []
   @StorageLink('travelNotes') travelNotes: travel_notes[] = []
+  userInfoModel:UserModel = UserModel.getInstance()
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区

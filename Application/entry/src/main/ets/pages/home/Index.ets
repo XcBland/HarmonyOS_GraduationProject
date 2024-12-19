@@ -81,7 +81,6 @@ struct Index {
             Safari()
           }else if(item.name === 'add'){
             Add()
-
           }else if(item.name ==='hotel'){
             Hotel()
           }else if(item.name === 'mine'){

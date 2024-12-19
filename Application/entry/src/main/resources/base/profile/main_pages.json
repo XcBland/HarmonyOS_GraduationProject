@@ -22,7 +22,7 @@
     "pages/Travel/TravelLogue",
     "pages/home/Hotel/HotelDetail/HotelDetail",
     "pages/Travel/UpdateTravelLog/UpdateTravelLog",
-    "pages/Travel/UploadTravelNote/UploadTravelNote"
-
+    "pages/Travel/UploadTravelNote/UploadTravelNote",
+    "pages/Travel/TravelNote"
   ]
 }
