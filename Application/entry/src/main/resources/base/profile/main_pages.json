@@ -26,6 +26,7 @@
     "pages/Travel/TravelNote",
     "pages/Travel/AllTravelNotes/AllTravelNotes",
     "pages/Travel/AllTravelTips/AllTravelTips",
-    "pages/home/Hotel/AllHotels"
+    "pages/home/Hotel/AllHotels",
+    "pages/Search/SearchPage"
   ]
 }

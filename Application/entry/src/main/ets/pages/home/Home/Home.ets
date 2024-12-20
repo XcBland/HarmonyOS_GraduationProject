@@ -3,6 +3,7 @@ import { font, router } from '@kit.ArkUI'
 import { TabIndexClass } from '../../../models'
 import { travel_tips } from '../../../enity/travel_tips'
 import { TravelTips } from '../../../components/TravelTips'
+import { Searched } from '../../../components/Searched'
 
 @Component
 export struct Home {
@@ -19,6 +20,13 @@ export struct Home {
     { name: '周边' }
   ]
   @StorageLink('travelNote') travelNote: travel_tips[] = []
+
+  searchController : CustomDialogController = new CustomDialogController({
+    builder:Searched(),
+    autoCancel:true,
+    customStyle: true,
+    alignment: DialogAlignment.TopStart,
+  })
 
   aboutToAppear(): void {
     font.registerFont({
@@ -46,10 +54,13 @@ export struct Home {
           .fontColor($r('app.color.text_primary'))
           .fontFamily('single')
       }.width('100%')
+
       Row() {
         Search()
           .width('100%')
           .onClick(() => {
+            // TODO: 搜索功能
+            this.searchController.open()
           })
           .height(40)
       }
@@ -66,12 +77,12 @@ export struct Home {
               .width(30)
               .height(30)
               .onClick(() => {
-                if(index === 0){
-                  router.pushUrl({url:'pages/Travel/AllTravelNotes/AllTravelNotes'})
-                }else if(index === 1){
-                  router.pushUrl({url:'pages/Travel/AllTravelTips/AllTravelTips'})
-                }else{
-                  router.pushUrl({url:'pages/home/Hotel/AllHotels'})
+                if (index === 0) {
+                  router.pushUrl({ url: 'pages/Travel/AllTravelNotes/AllTravelNotes' })
+                } else if (index === 1) {
+                  router.pushUrl({ url: 'pages/Travel/AllTravelTips/AllTravelTips' })
+                } else {
+                  router.pushUrl({ url: 'pages/home/Hotel/AllHotels' })
                 }
               })
             Text(item.title)
@@ -88,9 +99,9 @@ export struct Home {
               .width(250)
               .aspectRatio(1.5)
               .borderRadius(10)
-              .onClick(()=>{
+              .onClick(() => {
                 //router.pushUrl({url:'pages/home/TravelNoteDetail/TravelNoteDetail',params:{id:index+1}})
-                router.pushUrl({url:'pages/Travel/AllTravelTips/AllTravelTips'})
+                router.pushUrl({ url: 'pages/Travel/AllTravelTips/AllTravelTips' })
               })
 
           }
@@ -129,7 +140,7 @@ export struct Home {
           })
         }
         .backgroundColor($r('app.color.white'))
-        .borderRadius({topLeft: 10,topRight:10 })
+        .borderRadius({ topLeft: 10, topRight: 10 })
         .width('100%')
         .height('100%')
         .barHeight(40)

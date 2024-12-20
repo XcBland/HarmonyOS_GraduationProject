@@ -65,7 +65,7 @@ struct UploadTravelNote {
       travelNote.subtitle = subTitle
       travelNote.photoUrl = JSON.stringify(imageList)
       travelNote.publishTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
-      travelNote.userid = Math.random().toString(36).substring(2) + this.user?.getUid()
+      travelNote.userid = dayjs(new Date()).format('YYYYMMDD') + this.user?.getUid()
       await this.cloudDataBase?.upsert(travelNote)
       this.labelList = []
       this.imageList = []

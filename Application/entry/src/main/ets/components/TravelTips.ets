@@ -3,6 +3,8 @@ import { travel_tips } from "../enity/travel_tips";
 import schema from '../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { ImageList } from "../enity";
 import { promptAction, router } from "@kit.ArkUI";
+import { history_tips } from "../enity/history_tips";
+import dayjs from "@hview/dayjs";
 
 @Component
 export struct TravelTips {
@@ -11,22 +13,42 @@ export struct TravelTips {
   private cloudDB: Database | null = null;
   // 云数据库存储区
   private cloudDBZone = 'Graduation';
-  cloudDataBase: DatabaseCollection<travel_tips> | null = null
+  cloudDataBase1: DatabaseCollection<travel_tips> | null = null
+  cloudDataBase2: DatabaseCollection<history_tips> | null = null
   async aboutToAppear(){
 
     this.cloudDB = cloud.database({
       objectTypeInfo: schema,
       zoneName: this.cloudDBZone,
     })
-    this.cloudDataBase = this.cloudDB.collection<travel_tips>(travel_tips) // 获取云数据库的集合
+    this.cloudDataBase1 = this.cloudDB.collection<travel_tips>(travel_tips) // 获取云数据库的集合
+    this.cloudDataBase2 = this.cloudDB.collection<history_tips>(history_tips) // 获取云数据库的集合
     await this.queryAllTravelTips()
   }
   // 获取云数据库数据
   async queryAllTravelTips() {
     try {
-      this.travelTips = await this.cloudDataBase!.query().get()
+      this.travelTips = await this.cloudDataBase1!.query().get()
     } catch (e) {
       promptAction.showToast({ message: e.message })
+    }
+  }
+
+  // 点击数据之后，上传到历史记录
+  async upLoadTravelTipsToHistory(travelTip: travel_tips){
+    try {
+      const user = await cloud.auth().getCurrentUser()
+      const historyTip = new history_tips()
+      historyTip.setId(travelTip.getUserid() + user!.getUid() )     // 时间戳+uid
+      historyTip.setTitle(travelTip.getTitle())
+      historyTip.setSubtitle(travelTip.getSubtitle())
+      historyTip.setContent(travelTip.getContent())
+      historyTip.setPhotoUrl(travelTip.getPhotoUrl())
+      historyTip.setLabel(travelTip.getLabel())
+      historyTip.setScanTime(dayjs().format('YYYY-MM-DD HH:mm:ss'))
+      await this.cloudDataBase2!.upsert(historyTip)
+    }catch(e){
+      console.log("history upload failed "+e)
     }
   }
   build() {
@@ -65,6 +87,7 @@ export struct TravelTips {
           }
           .onClick(() => {
             router.pushUrl({ url: 'pages/Travel/TravelLogue', params: { id: item.getId() } })
+            this.upLoadTravelTipsToHistory(item)
           })
         }
         .borderRadius(10)

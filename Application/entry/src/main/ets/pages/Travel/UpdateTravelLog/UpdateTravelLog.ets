@@ -69,7 +69,7 @@ struct UpdateTravelLog {
       traveLog.subtitle = subTitle
       traveLog.photoUrl = JSON.stringify(imageList)
       traveLog.publishTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
-      traveLog.userid = Math.random().toString(36).substring(2) + this.user!.getUid()  // 随机数+用户ID
+      traveLog.userid = dayjs(new Date()).format('YYYYMMDD') + this.user!.getUid()  // 随机数+用户ID
       await this.cloudDataBase?.upsert(traveLog)
       this.labelList = []
       this.imageList = []
