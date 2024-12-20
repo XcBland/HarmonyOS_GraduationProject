@@ -6,7 +6,7 @@ import schema from '../../../resources/rawfile/My_Gradute_Project_3_cn.json'
  */
 import { HmDetailNav } from '../../components/DetailNav'
 import { travel_tips } from '../../enity/travel_tips'
-import { font, promptAction, router } from '@kit.ArkUI'
+import { App, font, promptAction, router } from '@kit.ArkUI'
 import CommonRouterParams from '../../models/router'
 import { Label } from '../../enity/labelArray'
 import { ImageList } from '../../enity/ImageList'
@@ -16,7 +16,6 @@ import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants'
 @Component
 struct TravelLogue {
   @State travelNote: travel_tips[] = []
-  // @State imgList: ImageList[] = []
   @State selectIndex: number = 0 // 选中的图片索引
   // CloudDB API
   private cloudDB: Database | null = null;
@@ -146,14 +145,11 @@ struct TravelLogue {
       .scrollBar(BarState.Off)
       .width('100%')
 
-
-
     }
     .height('100%')
     .padding({
-      top:AppStorage.get<number>(APP_TOP_HEIGHT),
-      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+      top: AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom: AppStorage.get<number>(APP_BOTTOM_HEIGHT)
     })
-
   }
 }

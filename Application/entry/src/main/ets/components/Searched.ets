@@ -9,9 +9,9 @@ import dayjs from '@hview/dayjs'
 @CustomDialog
 @Component
 export struct Searched {
-  search: CustomDialogController
-  @State keyword: string = ''
-  @State searchList: search_history[] = []
+  search: CustomDialogController // 弹窗控制器
+  @State keyword: string = '' // 搜索关键词
+  @State searchList: search_history[] = [] // 搜索历史列表
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
@@ -32,7 +32,6 @@ export struct Searched {
   async query() {
     try {
       this.searchList = await this.cloudDataBase!.query().get()
-      // console.log("query search history success: " + JSON.stringify(history))
     } catch (e) {
       console.log("query search history failed: " + e)
     }
@@ -52,6 +51,33 @@ export struct Searched {
   async clearSearchHistory() {
     await this.cloudDataBase?.delete(this.searchList)
     this.searchList = []
+  }
+
+  // 搜索历史列表
+  @Builder
+  searchHistoryList() {
+    Grid() {
+      ForEach(this.searchList, (item: search_history, index) => {
+        GridItem() {
+          Row() {
+            Text(item.searchinfo)
+              .fontSize(14)
+              .fontColor($r('app.color.text_secondary'))
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/Search/SearchPage', params: { keyword: item.searchinfo } })
+                this.search.close()
+              })
+          }.width(50)
+
+        }.width('auto')
+        .margin({
+          left: 10,
+          right: 10,
+        })
+      })
+    }.width('100%')
+    .columnsGap(10)
+    .rowsGap(10)
   }
 
   build() {
@@ -77,7 +103,6 @@ export struct Searched {
               if (this.keyword.trim() === '') {
                 return
               }
-              //this.searchList.unshift(new search_history()) // 新增搜索记录到数组最前面
               this.addSearchHistory(this.keyword)
               router.pushUrl({ url: 'pages/Search/SearchPage', params: { keyword: this.keyword } })
               this.search.close()
@@ -117,28 +142,7 @@ export struct Searched {
         .justifyContent(FlexAlign.SpaceBetween)
 
         if (this.searchList.length > 0) {
-          Grid() {
-            ForEach(this.searchList, (item: search_history, index) => {
-              GridItem() {
-
-                Row() {
-                  Text(item.searchinfo)
-                    .fontSize(14)
-                    .fontColor($r('app.color.text_secondary'))
-                    .onClick(() => {
-                      router.pushUrl({ url: 'pages/Search/SearchPage', params: { keyword: item.searchinfo } })
-                    })
-                }.width(50)
-
-              }.width('auto')
-              .margin({
-                left: 10,
-                right: 10,
-              })
-            })
-          }.width('100%')
-          .columnsGap(10)
-          .rowsGap(10)
+          this.searchHistoryList()
         } else {
           Text('暂无搜索记录')
         }

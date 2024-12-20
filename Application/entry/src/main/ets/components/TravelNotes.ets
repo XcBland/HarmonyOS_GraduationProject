@@ -3,15 +3,17 @@ import { travel_notes } from "../enity/travel_notes";
 import schema from '../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { ImageList } from "../enity";
 import { promptAction, router } from "@kit.ArkUI";
+
 @Component
 export struct TravelNotes {
-  @StorageLink('travelNotes') travelTips:travel_notes[] = [];
+  @StorageLink('travelNotes') travelNotes: travel_notes[] = [];
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
   private cloudDBZone = 'Graduation';
   cloudDataBase: DatabaseCollection<travel_notes> | null = null
-  async aboutToAppear(){
+
+  async aboutToAppear() {
 
     this.cloudDB = cloud.database({
       objectTypeInfo: schema,
@@ -20,18 +22,20 @@ export struct TravelNotes {
     this.cloudDataBase = this.cloudDB.collection<travel_notes>(travel_notes) // 获取云数据库的集合
     await this.queryAllTravelNotes()
   }
+
   // 获取云数据库数据
   async queryAllTravelNotes() {
     try {
-      this.travelTips = await this.cloudDataBase!.query().get()
+      this.travelNotes = await this.cloudDataBase!.query().get()
     } catch (e) {
       promptAction.showToast({ message: e.message })
     }
   }
+
   build() {
-    Grid(){
-      ForEach(this.travelTips, (item:travel_notes, index) => {
-        GridItem(){
+    Grid() {
+      ForEach(this.travelNotes, (item: travel_notes, index) => {
+        GridItem() {
           Column() {
             Image((JSON.parse(item.getPhotoUrl()) as ImageList[])[0].url
               ||
@@ -70,10 +74,10 @@ export struct TravelNotes {
         .borderWidth(1)
       })
     }
-    .columnsTemplate('1fr 1fr')   // 设置网格布局为2列
-    .columnsGap(10)   // 设置网格列间距
-    .rowsGap(10)   // 设置网格行间距
-    .padding(10)   // 设置网格内边距
+    .columnsTemplate('1fr 1fr') // 设置网格布局为2列
+    .columnsGap(10) // 设置网格列间距
+    .rowsGap(10) // 设置网格行间距
+    .padding(10) // 设置网格内边距
 
   }
 }

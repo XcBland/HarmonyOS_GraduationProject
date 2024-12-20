@@ -19,11 +19,9 @@ export struct Home {
     { name: '看海' },
     { name: '周边' }
   ]
-  @StorageLink('travelNote') travelNote: travel_tips[] = []
-
-  searchController : CustomDialogController = new CustomDialogController({
-    builder:Searched(),
-    autoCancel:true,
+  searchController: CustomDialogController = new CustomDialogController({
+    builder: Searched(),
+    autoCancel: true,
     customStyle: true,
     alignment: DialogAlignment.TopStart,
   })

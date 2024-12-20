@@ -5,6 +5,10 @@ import { userInfo_01 as userInfo } from '../../../enity/userInfo'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { ImageList } from '../../../enity/ImageList'
 import { travel_notes } from '../../../enity/travel_notes'
+import { question_list } from '../../../enity/question_list'
+import { JSON } from '@kit.ArkTS'
+import { Label } from '../../../enity'
+import { answer_list } from '../../../enity/answer_list'
 
 @Preview
 @Component
@@ -17,12 +21,16 @@ export struct Mine {
   @StorageLink('local_userInfo') data: userInfo = new userInfo()
   @StorageLink('travelTips') travelTips: travel_tips[] = []
   @StorageLink('travelNotes') travelNotes: travel_notes[] = []
+  @StorageLink('questionList') questionList: question_list[] = []
+  @StorageLink('answerList') answerList: answer_list[] = []
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
   private cloudDBZone = 'Graduation';
   cloudDataBase1: DatabaseCollection<travel_tips> | null = null
   cloudDataBase2: DatabaseCollection<travel_notes> | null = null
+  cloudDataBase3: DatabaseCollection<question_list> | null = null
+  cloudDataBase4: DatabaseCollection<answer_list> | null = null
 
   async aboutToAppear() {
     this.user = await cloud.auth().getCurrentUser() // 获取当前用户信息
@@ -35,17 +43,20 @@ export struct Mine {
       objectTypeInfo: schema,
       zoneName: this.cloudDBZone,
     })
-    this.cloudDataBase1 = this.cloudDB.collection<travel_tips>(travel_tips) // 获取云数据库的集合
-    this.cloudDataBase2 = this.cloudDB.collection<travel_notes>(travel_notes) // 获取云数据库的集合
+    this.cloudDataBase1 = this.cloudDB.collection<travel_tips>(travel_tips) // 获取旅游攻略集合云数据库的集合
+    this.cloudDataBase2 = this.cloudDB.collection<travel_notes>(travel_notes) // 获取旅游笔记云数据库的集合
+    this.cloudDataBase3 = this.cloudDB.collection<question_list>(question_list) // 获取问题云数据库的集合
+    this.cloudDataBase4 = this.cloudDB.collection<answer_list>(answer_list) // 获取回答云数据库的集合
     await this.queryAllTravelLogue() // 查询数据库
   }
-
 
   // 查询数据库
   async queryAllTravelLogue() {
     try {
       this.travelTips = await this.cloudDataBase1!.query().get()
       this.travelNotes = await this.cloudDataBase2!.query().get()
+      this.questionList = await this.cloudDataBase3!.query().contains('uid', this.user?.getUid()).get()
+      this.answerList = await this.cloudDataBase4!.query().get()
     } catch (e) {
       promptAction.showToast({ message: e.message })
     }
@@ -106,6 +117,60 @@ export struct Mine {
 
       })
     }
+  }
+
+  @Builder
+  MyQuestion() {
+    Row() {
+      ForEach(this.questionList, (item: question_list, index: number) => {
+        Image(item.user_photoUrl)
+          .width(30)
+          .aspectRatio(1)
+          .position({ top: 5 })
+        Column({ space: 10 }) {
+          Text(item.user_displayName)
+            .fontSize(14)
+            .fontColor($r('app.color.text_secondary'))
+            .margin({ top: 10 })
+          Text(item.getTitle())
+            .fontSize(20)
+            .fontColor($r('app.color.text_primary'))
+          Text((JSON.parse(item.getLabel()) as Label[])[0].labels)
+            .fontSize(12)
+            .fontColor('#ff00c4ff')
+            .border({ width: 1, color: '#ff00c4ff' })
+            .padding({
+              left: 15,
+              right: 15,
+              top: 5,
+              bottom: 5
+            })
+            .borderRadius(10)
+          Row() {
+            Text(item.getPublishTime())
+              .fontSize(12)
+              .fontColor($r('app.color.text_secondary'))
+            Blank()
+            Image($r('app.media.answer'))
+              .width(15)
+              .fillColor($r('app.color.text_secondary'))
+            Text(this.answerList.length.toString())
+              .margin({ left: 5 })
+              .fontSize(12)
+              .fontColor($r('app.color.text_secondary'))
+          }
+          .width('100%')
+        }
+        .onClick(() => {
+          router.pushUrl({ url: 'pages/Travel/Asking/AskingDetail', params: { id: index + 1 } })
+        })
+        .margin({ left: 50 })
+        .width('80%')
+        .justifyContent(FlexAlign.Start)
+        .alignItems(HorizontalAlign.Start)
+      })
+    }
+
   }
 
   build() {
@@ -220,7 +285,7 @@ export struct Mine {
                 .fontSize(14)
                 .fontColor($r('app.color.text_secondary'))
                 .onClick(() => {
-                  router.pushUrl({url:'pages/Travel/AllTravelTips/AllTravelTips'})
+                  router.pushUrl({ url: 'pages/Travel/AllTravelTips/AllTravelTips' })
                 })
             }
             .width('90%')
@@ -244,7 +309,7 @@ export struct Mine {
                 .fontSize(14)
                 .fontColor($r('app.color.text_secondary'))
                 .onClick(() => {
-                  router.pushUrl({url:'pages/Travel/AllTravelNotes/AllTravelNotes'})
+                  router.pushUrl({ url: 'pages/Travel/AllTravelNotes/AllTravelNotes' })
                 })
             }
             .width('90%')
@@ -266,53 +331,10 @@ export struct Mine {
               .textAlign(TextAlign.Start)
               .margin({ top: 20 })
 
-            Row() {
-              Image($r('app.media.app_icon'))
-                .width(30)
-                .aspectRatio(1)
-                .position({ top: 5 })
-              Column({ space: 10 }) {
-                Text('用户名')
-                  .fontSize(14)
-                  .fontColor($r('app.color.text_secondary'))
-                  .margin({ top: 10 })
-                Text('问题')
-                  .fontSize(20)
-                  .fontColor($r('app.color.text_primary'))
-                Text('标签')
-                  .fontSize(12)
-                  .fontColor('#ff00c4ff')
-                  .border({ width: 1, color: '#ff00c4ff' })
-                  .padding({
-                    left: 15,
-                    right: 15,
-                    top: 5,
-                    bottom: 5
-                  })
-                  .borderRadius(10)
-                Row() {
-                  Text('2024.12.12')
-                    .fontSize(12)
-                    .fontColor($r('app.color.text_secondary'))
-                  Blank()
-                  Image($r('app.media.app_icon'))
-                    .width(15)
-                    .fillColor($r('app.color.text_secondary'))
-                  Text('2')
-                    .margin({ left: 5 })
-                    .fontSize(12)
-                    .fontColor($r('app.color.text_secondary'))
-                }
-                .width('100%')
-
-              }
-              .margin({ left: 50 })
-              .width('80%')
-              .justifyContent(FlexAlign.Start)
-              .alignItems(HorizontalAlign.Start)
+            Scroll() {
+              this.MyQuestion()
             }
-            .width('90%')
-            .margin({ top: 20 })
+
           }
 
         }
