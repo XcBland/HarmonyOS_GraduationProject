@@ -1,5 +1,5 @@
 import { router } from '@kit.ArkUI'
-import { APP_TOP_HEIGHT, TOKEN_KEY } from '../../constants'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT, TOKEN_KEY } from '../../constants'
 import { AdvertClass } from '../../models'
 import { UserSettingClass } from '../../utils'
 
@@ -63,6 +63,7 @@ struct StartAd {
     }
     .width('100%')
     .height('100%')
+    .padding({ top: AppStorage.get<number>(APP_TOP_HEIGHT),bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT) })
   }
 
   aboutToDisappear(): void {

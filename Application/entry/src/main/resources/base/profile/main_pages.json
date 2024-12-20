@@ -23,6 +23,9 @@
     "pages/home/Hotel/HotelDetail/HotelDetail",
     "pages/Travel/UpdateTravelLog/UpdateTravelLog",
     "pages/Travel/UploadTravelNote/UploadTravelNote",
-    "pages/Travel/TravelNote"
+    "pages/Travel/TravelNote",
+    "pages/Travel/AllTravelNotes/AllTravelNotes",
+    "pages/Travel/AllTravelTips/AllTravelTips",
+    "pages/home/Hotel/AllHotels"
   ]
 }

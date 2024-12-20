@@ -1,7 +1,8 @@
 import { ImageList, ImageListEntity } from '../../../enity'
-import { font } from '@kit.ArkUI'
+import { font, router } from '@kit.ArkUI'
 import { TabIndexClass } from '../../../models'
 import { travel_tips } from '../../../enity/travel_tips'
+import { TravelTips } from '../../../components/TravelTips'
 
 @Component
 export struct Home {
@@ -17,7 +18,7 @@ export struct Home {
     { name: '看海' },
     { name: '周边' }
   ]
-  @StorageLink('travelLogue') travelLogue: travel_tips[] = []
+  @StorageLink('travelNote') travelNote: travel_tips[] = []
 
   aboutToAppear(): void {
     font.registerFont({
@@ -26,60 +27,59 @@ export struct Home {
     })
   }
 
+  // 首页头部
   @Builder
-  getTravelTips() {
-    Column() {
-      Text('旅行攻略')
-    }
-  }
-
-  build() {
-    Column() {
-      Column({ space: 10 }) {
-        Column({ space: 5 }) {
-          Text('乐途')
-            .width('80%')
-            .textAlign(TextAlign.Center)
-            .fontSize(30)
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
-            .fontFamily('single')
-          Text('-让旅程更快乐更简单')
-            .width('80%')
-            .textAlign(TextAlign.End)
-            .fontSize(14)
-            .fontColor($r('app.color.text_primary'))
-            .fontFamily('single')
-        }.width('100%')
-
-        Row() {
-          Search()
-            .width('100%')
-            .onClick(() => {
-            })
-            .height(40)
-        }
-        .width('90%')
-        .justifyContent(FlexAlign.Center)
-        .backgroundColor($r('app.color.white'))
-        .borderRadius(20)
-        .height(40)
-
-        Row() {
-          ForEach(this.selectedItem, (item: SelectedItem, index) => {
-            Column({ space: 2 }) {
-              Image(item.img)
-                .width(30)
-                .height(30)
-              Text(item.title)
-                .fontSize(12)
-            }
+  getHomeTitle() {
+    Column({ space: 10 }) {
+      Column({ space: 5 }) {
+        Text('乐途')
+          .width('80%')
+          .textAlign(TextAlign.Center)
+          .fontSize(30)
+          .fontWeight(FontWeight.Bold)
+          .fontColor($r('app.color.text_primary'))
+          .fontFamily('single')
+        Text('-让旅程更快乐更简单')
+          .width('80%')
+          .textAlign(TextAlign.End)
+          .fontSize(14)
+          .fontColor($r('app.color.text_primary'))
+          .fontFamily('single')
+      }.width('100%')
+      Row() {
+        Search()
+          .width('100%')
+          .onClick(() => {
           })
-        }.width('100%')
-        .justifyContent(FlexAlign.SpaceAround)
+          .height(40)
+      }
+      .width('90%')
+      .justifyContent(FlexAlign.Center)
+      .backgroundColor($r('app.color.white'))
+      .borderRadius(20)
+      .height(40)
 
-      }.width('100%').margin({ top: 20 })
-
+      Row() {
+        ForEach(this.selectedItem, (item: SelectedItem, index) => {
+          Column({ space: 2 }) {
+            Image(item.img)
+              .width(30)
+              .height(30)
+              .onClick(() => {
+                if(index === 0){
+                  router.pushUrl({url:'pages/Travel/AllTravelNotes/AllTravelNotes'})
+                }else if(index === 1){
+                  router.pushUrl({url:'pages/Travel/AllTravelTips/AllTravelTips'})
+                }else{
+                  router.pushUrl({url:'pages/home/Hotel/AllHotels'})
+                }
+              })
+            Text(item.title)
+              .fontSize(12)
+          }
+        })
+      }.width('100%')
+      .justifyContent(FlexAlign.SpaceAround)
 
       Swiper() {
         ForEach(this.imgArr, (item: ImageList, index) => {
@@ -88,8 +88,9 @@ export struct Home {
               .width(250)
               .aspectRatio(1.5)
               .borderRadius(10)
-              .onClick(() => {
-                // TODO: 跳转到详情页(三个全部)
+              .onClick(()=>{
+                //router.pushUrl({url:'pages/home/TravelNoteDetail/TravelNoteDetail',params:{id:index+1}})
+                router.pushUrl({url:'pages/Travel/AllTravelTips/AllTravelTips'})
               })
 
           }
@@ -105,21 +106,37 @@ export struct Home {
       .indicator(false) // 隐藏指示器
       .loop(true) // 循环播放
       .vertical(false) // 竖直方向
+    }.width('100%').margin({ top: 20 })
+  }
 
-      Tabs() {
-        ForEach(this.tabs, (item: TabIndexClass, index) => {
-          TabContent() {
-            // 全部用一个组件
-          }
-          .backgroundColor($r('app.color.white'))
-          .tabBar(item.name)
-        })
+  build() {
+    List() {
+      ListItem() {
+        this.getHomeTitle()
       }
       .width('100%')
-      .height('100%')
-      .barHeight(40)
+
+
+      ListItem() {
+        Tabs() {
+          ForEach(this.tabs, (item: TabIndexClass, index) => {
+            TabContent() {
+              // 全部用一个组件
+              TravelTips()
+            }
+
+            .tabBar(item.name)
+          })
+        }
+        .backgroundColor($r('app.color.white'))
+        .borderRadius({topLeft: 10,topRight:10 })
+        .width('100%')
+        .height('100%')
+        .barHeight(40)
+      }.width('100%')
 
     }
+    .sticky(StickyStyle.Header)
     .backgroundImage($r('app.media.fengjing17'))
     .backgroundImageSize(ImageSize.Auto)
     .width('100%')

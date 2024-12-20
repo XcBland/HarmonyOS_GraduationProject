@@ -3,18 +3,19 @@
  *
  */
 import { HmCard, HmCardItem, HmNavBar } from '../../../components'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
 
 @Entry
 @Component
 struct Release {
-  // TODO: 页面数据
+
   build() {
     Column() {
       HmNavBar({title:'关于我们'})
       Column(){
         Image($r('app.media.leto'))
           .width(150)
-          .aspectRatio(2)
+          .aspectRatio(1)
           .margin({top: 20})
         Text('乐途')
           .fontSize(30)
@@ -53,6 +54,11 @@ struct Release {
     .backgroundColor($r('app.color.white'))
     .width('100%')
     .height('100%')
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
+    .backgroundImage($r('app.media.fengjing7'))
 
     
   }

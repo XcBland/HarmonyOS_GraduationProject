@@ -1,10 +1,11 @@
-import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json';
-import { hotel } from '../../../enity/hotel';
+import schema from '../../resources/rawfile/My_Gradute_Project_3_cn.json';
+import { hotel } from '../enity/hotel';
 import cloud, { Database, DatabaseCollection } from '@hw-agconnect/cloud';
 import { router } from '@kit.ArkUI';
+import { HmNavBar } from '.';
 
 @Component
-export struct Hotel {
+export struct HotelComp {
   @StorageProp('hotel') hotel: hotel[] = []
   // CloudDB API
   private cloudDB: Database | null = null;
@@ -62,7 +63,6 @@ export struct Hotel {
           .onClick(() => {
             router.pushUrl({url:'pages/home/Hotel/HotelDetail/HotelDetail',params: {id: (index+1).toString()}})
           })
-
           .justifyContent(FlexAlign.SpaceBetween)
           .width('100%')
 
@@ -79,24 +79,13 @@ export struct Hotel {
           .height(100)
       }
     }
-    .backgroundImage($r('app.media.fengjing19'))
-    .backgroundImageSize(ImageSize.Cover)
     .margin({ top: 20 })
     .width('100%')
   }
-
   build() {
     Column() {
-      Text('热门精选星级酒店')
-        .fontSize(24)
-        .fontWeight(700)
-        .width('100%')
-        .textAlign(TextAlign.Center)
-        .margin({ top: 20 })
-
-      // 显示酒店列表
+      HmNavBar({title: '各地酒店推荐'})
       this.getHotelList()
-
     }
     .width('100%')
 

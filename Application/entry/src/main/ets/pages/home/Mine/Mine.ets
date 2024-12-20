@@ -5,7 +5,6 @@ import { userInfo_01 as userInfo } from '../../../enity/userInfo'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { ImageList } from '../../../enity/ImageList'
 import { travel_notes } from '../../../enity/travel_notes'
-import UserModel from '../../../models/UserModel'
 
 @Preview
 @Component
@@ -16,9 +15,8 @@ export struct Mine {
   @State displayName: string = ''
   // @StorageLink('user') currentUser: AgUser | undefined = AppStorage.get<AgUser>('user')
   @StorageLink('local_userInfo') data: userInfo = new userInfo()
-  @StorageLink('travelLogue') travelLogue: travel_tips[] = []
+  @StorageLink('travelTips') travelTips: travel_tips[] = []
   @StorageLink('travelNotes') travelNotes: travel_notes[] = []
-  userInfoModel:UserModel = UserModel.getInstance()
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
@@ -42,12 +40,11 @@ export struct Mine {
     await this.queryAllTravelLogue() // 查询数据库
   }
 
-  //TODO: 待实现(再次调取数据库）
 
   // 查询数据库
   async queryAllTravelLogue() {
     try {
-      this.travelLogue = await this.cloudDataBase1!.query().get()
+      this.travelTips = await this.cloudDataBase1!.query().get()
       this.travelNotes = await this.cloudDataBase2!.query().get()
     } catch (e) {
       promptAction.showToast({ message: e.message })
@@ -58,7 +55,7 @@ export struct Mine {
   @Builder
   getTravelTips() {
     Row() {
-      ForEach(this.travelLogue, (item: travel_tips, index: number) => {
+      ForEach(this.travelTips, (item: travel_tips, index: number) => {
         Row() {
           Image((JSON.parse(item.getPhotoUrl()) as ImageList[])[0].url
             ||
@@ -104,8 +101,7 @@ export struct Mine {
             .aspectRatio(1)
             .margin(10)
         }.onClick(() => {
-          // router.pushUrl({ url: 'pages/Travel/TravelLogue', params: { id: item.getId() } })
-          //TODO: 待实现
+          router.pushUrl({ url: 'pages/Travel/TravelNote', params: { id: item.getId() } })
         })
 
       })
@@ -224,7 +220,7 @@ export struct Mine {
                 .fontSize(14)
                 .fontColor($r('app.color.text_secondary'))
                 .onClick(() => {
-                  // TODO: queryAllTravelLogue
+                  router.pushUrl({url:'pages/Travel/AllTravelTips/AllTravelTips'})
                 })
             }
             .width('90%')
@@ -248,7 +244,7 @@ export struct Mine {
                 .fontSize(14)
                 .fontColor($r('app.color.text_secondary'))
                 .onClick(() => {
-                  // TODO: queryAllTravelLogue
+                  router.pushUrl({url:'pages/Travel/AllTravelNotes/AllTravelNotes'})
                 })
             }
             .width('90%')

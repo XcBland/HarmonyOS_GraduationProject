@@ -1,20 +1,19 @@
+/**
+ * @Auhtor DLY
+ *
+ */
+import { HmNavBar } from '../../../components'
+
 @Entry
 @Component
 struct Order {
-  @State message: string = 'Hello World';
-
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('OrderHelloWorld')
-        .fontSize(50)
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
+    Column() {
+      HmNavBar({title:'酒店订单'})
     }
-    .height('100%')
     .width('100%')
+    .height('100%')
+
+
   }
 }

@@ -10,11 +10,12 @@ import { font, promptAction, router } from '@kit.ArkUI'
 import CommonRouterParams from '../../models/router'
 import { Label } from '../../enity/labelArray'
 import { ImageList } from '../../enity/ImageList'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants'
 
 @Entry
 @Component
 struct TravelLogue {
-  @State travelLogue: travel_tips[] = []
+  @State travelNote: travel_tips[] = []
   // @State imgList: ImageList[] = []
   @State selectIndex: number = 0 // 选中的图片索引
   // CloudDB API
@@ -38,8 +39,8 @@ struct TravelLogue {
   async query() {
     try {
       const params = router.getParams() as CommonRouterParams
-      this.travelLogue = await this.cloudDataBase!.query().equalTo('id', params.id).get()
-      console.log("TravelLogue query success: " + JSON.stringify(this.travelLogue))
+      this.travelNote = await this.cloudDataBase!.query().equalTo('id', params.id).get()
+      console.log("TravelLogue query success: " + JSON.stringify(this.travelNote))
     } catch (e) {
       promptAction.showToast({ message: e.message })
       console.error("TravelLogue query error: " + JSON.stringify(e))
@@ -50,10 +51,10 @@ struct TravelLogue {
   async deleteById() {
     try {
       let tip: travel_tips = new travel_tips()
-      tip.id = this.travelLogue[0].id
+      tip.id = this.travelNote[0].id
       let result = await this.cloudDataBase!.delete(tip)
       promptAction.showToast({ message: '删除成功' })
-      // TODO: 通信刷新
+
 
     } catch (e) {
       promptAction.showToast({ message: e.message })
@@ -73,7 +74,7 @@ struct TravelLogue {
         }
       })
       List() {
-        ForEach(this.travelLogue, (item: travel_tips, index) => {
+        ForEach(this.travelNote, (item: travel_tips, index) => {
           ListItem() {
             Column({ space: 20 }) {
               Text(item.title)
@@ -82,6 +83,11 @@ struct TravelLogue {
                 .width('100%')
                 .textAlign(TextAlign.Center)
                 .margin({ top: 20 })
+              Text(item.subtitle)
+                .fontSize(20)
+                .fontColor($r('app.color.text_primary'))
+                .fontFamily('queen')
+                .lineHeight(25)
               List() {
                 ForEach((JSON.parse(item.photoUrl) as ImageList[]), (item: ImageList, index: number) => {
                   ListItem() {
@@ -141,30 +147,13 @@ struct TravelLogue {
       .width('100%')
 
 
-      /*      Scroll(){
-              ForEach(this.travelLogue, (item:travel_tips, index) => {
-                Column({space:20}){
-                  Text(item.title)
-                    .fontSize(28)
-                    .fontWeight(FontWeight.Bold)
-                    .width('100%')
-                    .textAlign(TextAlign.Center)
-                  Text(item.content)
-                    .fontSize(20)
-                    .fontColor($r('app.color.white'))
-                    .fontFamily('queen')
-                  Row().height(10).opacity(0)
-                }
-                .width('100%')
-                .height('100%')
-                .backgroundImage(item.getPhotoUrl())
-                .backgroundImageSize(ImageSize.Cover)
-              })
-            }
-            .height('100%')*/
 
     }
     .height('100%')
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
 
   }
 }

@@ -92,7 +92,6 @@ export struct passwordUpdateDialog {
             promptAction.showToast({ message: '两次输入的密码不一致' })
             return
           }
-          // TODO:密码验证规则
           if (this.verifyCode.length !== 6) {
             promptAction.showToast({ message: '验证码错误' })
             return

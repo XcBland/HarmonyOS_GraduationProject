@@ -1,7 +1,7 @@
 
 import { fileIo as fs } from "@kit.CoreFileKit"
 import { HmNavBar } from '../../../components'
-import { APP_TOP_HEIGHT } from '../../../constants'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
 
 
 @Entry
@@ -87,6 +87,10 @@ struct ClearCache {
     .width('100%')
     .justifyContent(FlexAlign.Start)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor($r('app.color.white'))
+    .backgroundImage($r('app.media.fengjing7'))
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
   }
 }

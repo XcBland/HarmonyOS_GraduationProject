@@ -10,6 +10,7 @@ import { ImageList, Label } from '../../../enity'
 import { promptAction, router } from '@kit.ArkUI'
 import dayjs from '@hview/dayjs'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
 
 
 @Entry
@@ -64,7 +65,7 @@ struct UploadTravelNote {
       travelNote.subtitle = subTitle
       travelNote.photoUrl = JSON.stringify(imageList)
       travelNote.publishTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
-      travelNote.userid = this.user?.getUid()
+      travelNote.userid = Math.random().toString(36).substring(2) + this.user?.getUid()
       await this.cloudDataBase?.upsert(travelNote)
       this.labelList = []
       this.imageList = []
@@ -337,6 +338,10 @@ struct UploadTravelNote {
     .width('100%')
     .height('100%')
     .backgroundImage($r('app.media.fengjing15'))
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
 
   }
 }

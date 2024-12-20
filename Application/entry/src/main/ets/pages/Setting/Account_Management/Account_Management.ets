@@ -3,10 +3,11 @@ import cloud, { AuthUser, Database, DatabaseCollection } from '@hw-agconnect/clo
  * @Auhtor DLY
  *
  */
-import {  userInfo_01 as userInfo } from '../../../enity/userInfo'
-import {AgUser } from '../../../enity/AgUser'
+import { userInfo_01 as userInfo } from '../../../enity/userInfo'
+import { AgUser } from '../../../enity/AgUser'
 import { HmNavBar, PassWordUpdateDialog, PhoneLinkDialog, PhoneUpdateDialog } from '../../../components'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
 
 
 @Entry
@@ -106,10 +107,10 @@ struct Account_Management {
             .borderRadius(10)
             .onClick(() => {
               if (this.phone === '') {
-                // TODO 绑定手机号
+
                 this.phoneController.open()
               } else {
-                // TODO 修改手机号
+
                 this.phoneUpdateController.open()
               }
             })
@@ -193,7 +194,6 @@ struct Account_Management {
             .fontColor($r('app.color.text_secondary'))
             .textAlign(TextAlign.Center)
             .onClick(() => {
-              // TODO 修改密码
               this.passwordController.open()
             })
 
@@ -205,9 +205,13 @@ struct Account_Management {
       }
       .margin({ top: 20 })
     }
-    .backgroundColor($r('app.color.background_page'))
+    .backgroundImage($r('app.media.fengjing7'))
     .width('100%')
     .height('100%')
+    .padding({
+      top: AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom: AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
 
   }
 }

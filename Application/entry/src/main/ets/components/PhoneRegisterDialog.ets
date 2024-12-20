@@ -14,7 +14,6 @@ export struct PhoneRegisterDialog {
   // 状态变量
   @State phoneNum: string = ''  // 手机号
   @State verifyCode: string = ''  // 验证码
-  @State isEnable: boolean = true  // 验证码是否可用
   @StorageLink('user') currentUser:AgUser | undefined =
    undefined // 当前登录用户信息
 
@@ -41,8 +40,8 @@ export struct PhoneRegisterDialog {
         countryCode: '86',
         phoneNumber: this.phoneNum,
         verifyCode: this.verifyCode
-      }).then(async (result)=>{
-        this.isEnable = true
+      })
+        .then(async (result)=>{
         let user = result.getUser()
         let agUser = await this.getAgUser(user)
         AppStorage.setOrCreate<AgUser>('uesr',agUser)
@@ -80,7 +79,7 @@ export struct PhoneRegisterDialog {
         Button('获取验证码')
           .width('40%')
           .onClick(() => {
-            this.userInstance.getPhoneVerifyCode(this.isEnable,this.phoneNum)
+            this.userInstance.getPhoneVerifyCode(true,this.phoneNum)
           })
           .height(50)
           .borderWidth({ top: 1, right: 1, bottom: 1 })

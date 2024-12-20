@@ -16,14 +16,7 @@ import cloud, { Database, DatabaseCollection } from '@hw-agconnect/cloud'
 @Entry
 @Component
 struct Index {
-  /*  // 登出
-    async logOut(){
-      await cloud.auth().signOut()
-        .then(() => {
-          AppStorage.set(TOKEN_KEY,'')
-          router.replaceUrl({ url: 'pages/Login/LoginIndex' })
-        })
-    }*/
+
   @State tabsData: TabIndexClass[] = [
     { name: 'home', icon: $r('app.media.home_fill') },
     { name: 'safari', icon: $r('app.media.ie') },
@@ -53,9 +46,9 @@ struct Index {
 
   // 获取Auth的Uid，根据Uid对应判断数据库里的内容
   async getUid(){
-    const uid = await cloud.auth().getCurrentUser().then(user => {
-      return user?.getUid()
-    })
+    const user = await cloud.auth().getCurrentUser()
+    const uid = user?.getUid()
+    console.log('uid:',uid)
     this.cloudDB = cloud.database({
       objectTypeInfo: schema,
       zoneName: this.cloudDBZone,
@@ -67,8 +60,9 @@ struct Index {
     }
   }
 
-  aboutToAppear(){
-    this.getUid()
+  async aboutToAppear(){
+    AppStorage.get('user')
+    await this.getUid()
   }
 
   build() {

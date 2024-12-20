@@ -32,19 +32,11 @@ struct Registration {
   cloudPath: string | undefined = '';
   authUser: AuthUser | null = null;
   userInfo: UserInfo | null = new UserInfo(); // 用户信息
-  cloudDataBase: DatabaseCollection<userInfo> | undefined = undefined
+  userInstance:UserModel = UserModel.getInstance()
   @State resultArray: userInfo[] = []
-  // CloudDB API
-  private cloudDB: Database | null = null;
-  // 云数据库存储区
-  private cloudDBZone = 'Graduation';
 
   async aboutToAppear() {
-    this.cloudDB = cloud.database({
-      objectTypeInfo: schema,
-      zoneName: this.cloudDBZone,
-    })
-    this.cloudDataBase = this.cloudDB?.collection<userInfo>(userInfo)
+    this.userInstance.logOut()
   }
   // 手机注册弹窗
   phoneRegisterDialog: CustomDialogController = new CustomDialogController({
@@ -110,6 +102,7 @@ struct Registration {
     return imgUri
   }
 
+
   /*邮箱注册*/
   async emailRegister() {
     try {
@@ -134,7 +127,6 @@ struct Registration {
       })
       let agUser = await this.getAgUser(user)
       AppStorage.setOrCreate('user', agUser)
-
       promptAction.showToast({ message: '注册成功' })
       router.pushUrl({ url: 'pages/home/Index' })
 
@@ -153,7 +145,7 @@ struct Registration {
       addUser.photoUrl = this.photoUrl
       addUser.phoneNum = user?.getPhone()
       addUser.email = this.email
-      let newUser = await this.cloudDataBase?.upsert(addUser)
+      let newUser = await this.userInstance.collection?.upsert(addUser)
       if (newUser !== null) {
         AlertDialog.show({ message: '注册成功' })
       } else {
@@ -164,23 +156,6 @@ struct Registration {
     }
   }
 
-  // 邮箱登录
-  /*async emailLogin() {
-    await cloud.auth().signOut()
-    await cloud.auth().signIn({
-      autoCreateUser: true,
-      credentialInfo: {
-        kind: 'email',
-        email: this.email,
-        password: this.password
-      }
-    }).then(user => {
-      AppStorage.set(TOKEN_KEY, user.getUser().getToken(true))
-      router.replaceUrl({ url: 'pages/home/Index' })
-    }).catch((error: BusinessError) => {
-      console.error('login28-->' + JSON.stringify(error))
-    })
-  }*/
 
   build() {
     Column() {

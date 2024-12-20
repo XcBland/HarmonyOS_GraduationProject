@@ -4,6 +4,8 @@ import { font, window } from '@kit.ArkUI';
 import { initialize } from '@hw-agconnect/hmcore';
 import json from '../../resources/rawfile/app-schema.json';
 import cloud from '@hw-agconnect/cloud';
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../constants';
+import { UserSettingClass } from '../utils';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -30,16 +32,33 @@ export default class EntryAbility extends UIAbility {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
   }
 
-  onWindowStageCreate(windowStage: window.WindowStage): void {
+  async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
     // Main window is created, set main page for this ability
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-    windowStage.loadContent('pages/Start/StartAd', (err, data) => {
-      if (err.code) {
-        hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
-        return;
+    // 实现全屏效果
+    windowStage.getMainWindowSync().setWindowLayoutFullScreen(true)
+    // 获取头部高度
+    const topHeight =
+      px2vp(windowStage.getMainWindowSync().getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM).topRect.height)
+    // 获取底部高度
+    const bottomHeight =
+      px2vp(windowStage.getMainWindowSync().getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR).bottomRect.height)
+    AppStorage.setOrCreate<number>(APP_TOP_HEIGHT, topHeight)
+    AppStorage.setOrCreate<number>(APP_BOTTOM_HEIGHT, bottomHeight)
+    //2.存储首选项
+    const userSetting = new UserSettingClass(this.context)
+    const result = await userSetting.getUserAd()
+    if(result.showAd){
+      windowStage.loadContent('pages/Start/StartAd');
+    }else{
+      const token = await cloud.auth().getCurrentUser().then((user) => {
+        return user?.getToken(true)
+      })
+      if(token){
+        windowStage.loadContent('pages/home/Index');
+      }else{
+        windowStage.loadContent('pages/Login/LoginIndex');
       }
-      hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
-    });
+    }
   }
 
   onWindowStageDestroy(): void {

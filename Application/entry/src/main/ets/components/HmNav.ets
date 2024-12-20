@@ -40,7 +40,7 @@ export struct HmNavBar {
 
 
     }
-    .backgroundColor($r('app.color.white'))
+    // .backgroundColor($r('app.color.white'))
     .width('100%')
     .height(50)
     .padding(10)

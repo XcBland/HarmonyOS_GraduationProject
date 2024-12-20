@@ -6,7 +6,7 @@ import { RecommendDialog, HmCard, HmCardItem, HmConfirm, HmNavBar } from '../../
 import { router } from '@kit.ArkUI'
 import cloud from '@hw-agconnect/cloud'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { TOKEN_KEY } from '../../../constants'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT, TOKEN_KEY } from '../../../constants'
 import { UserSettingClass } from '../../../utils'
 
 @Entry
@@ -141,9 +141,14 @@ struct SettingPage {
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
     }
+
     .backgroundImage($r('app.media.fengjing7'))
     .width('100%')
     .height('100%')
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
 
   }
 }

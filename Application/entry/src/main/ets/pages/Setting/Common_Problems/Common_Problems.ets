@@ -13,6 +13,7 @@ import { MessageItem } from '../../../enity/MessageItem'
 import cloud, { AuthUser } from '@hw-agconnect/cloud'
 import MessageComp from '../../../components/MessageComp'
 import { HmNavBar } from '../../../components'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
 
 @Entry
 @Component
@@ -154,7 +155,11 @@ struct RobotTalking {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#f1f2f3')
+    .backgroundImage($r('app.media.fengjing7'))
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
 
   }
 }

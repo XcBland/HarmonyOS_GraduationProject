@@ -10,6 +10,7 @@ import { ImageList, Label } from '../../../enity'
 import { promptAction, router } from '@kit.ArkUI'
 import dayjs from '@hview/dayjs'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
 
 
 @Entry
@@ -68,7 +69,7 @@ struct UpdateTravelLog {
       traveLog.subtitle = subTitle
       traveLog.photoUrl = JSON.stringify(imageList)
       traveLog.publishTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
-      traveLog.userid = this.user?.getUid()
+      traveLog.userid = Math.random().toString(36).substring(2) + this.user!.getUid()  // 随机数+用户ID
       await this.cloudDataBase?.upsert(traveLog)
       this.labelList = []
       this.imageList = []
@@ -337,6 +338,10 @@ struct UpdateTravelLog {
     .width('100%')
     .height('100%')
     .backgroundImage($r('app.media.fengjing12'))
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
 
   }
 }

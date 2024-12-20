@@ -7,6 +7,7 @@ import { userInfo_01 as userInfo } from '../../../enity/userInfo';
 import {AgUser } from '../../../enity/AgUser'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import dayjs from '@hview/dayjs';
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants';
 
 
 @Entry
@@ -203,13 +204,6 @@ struct MoreMine {
           Text('生 日:')
             .fontColor($r('app.color.white')).fontFamily('single')
             .margin({left:10})
-          // TextInput({text:this.userInfo.getBirthday()})
-          //   .width('60%')
-          //   .onChange((value)=>{
-          //     this.userInfo.setBirthday(value)
-          //   })
-          //   .fontColor($r('app.color.white'))
-          //   .fontFamily('single')
           Text(this.userInfo.getBirthday())
             .fontColor($r('app.color.white'))
             .fontFamily('single')
@@ -267,16 +261,17 @@ struct MoreMine {
           .borderRadius(100)
           .margin({top: 100, bottom: 20})
 
-/*        Button('查询')
-          .onClick(async ()=>{
-            await this.query()
-          })*/
+
       }
     }
     .width('100%')
     .height('100%')
     .backgroundImage($r('app.media.fengjing8'))
     .backgroundImageSize(ImageSize.Cover)
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
 
 
   }

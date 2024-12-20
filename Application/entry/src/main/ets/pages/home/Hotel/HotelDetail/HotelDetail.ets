@@ -8,6 +8,7 @@ import CommonRouterParams from '../../../../models/router'
 import cloud, { Database, DatabaseCollection } from '@hw-agconnect/cloud'
 import { HmNavBar } from '../../../../components'
 import schema from '../../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../../constants'
 
 @Entry
 @Component
@@ -104,5 +105,9 @@ struct HotelDetail {
       }
     }
     .width('100%')
+    .padding({
+      top:AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
   }
 }

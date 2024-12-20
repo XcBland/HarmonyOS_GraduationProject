@@ -3,24 +3,24 @@ import { promptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { TOKEN_KEY } from '../constants';
 import { userInfo_01 as userInfo } from '../enity/userInfo';
-import schema from '../../resources/rawfile/My_Gradute_Project_3_cn.json'
+import schema from '../../resources/rawfile/My_Gradute_Project_3_cn.json';
+
 export default class UserModel {
   //   懒汉模式
   private static instance: UserModel;
   // 数据库所在区域名称
-  private zoneName: string = 'Graduation'
+  cloudDBZone: string = 'Graduation'
   // 数据库对象
-  private cloudDB: Database | null = null
+  cloudDB: Database | null = null
   // 用户信息集合对象
-  private collection: DatabaseCollection<userInfo> | null = null
+  collection: DatabaseCollection<userInfo> | null = null
 
-
-  constructor() {
+  private constructor() {
     this.cloudDB = cloud.database({
       objectTypeInfo: schema,
-      zoneName: this.zoneName
+      zoneName: this.cloudDBZone
     })
-    this.collection = this.cloudDB.collection<userInfo>(userInfo)  // 实例化用户信息集合对象
+    this.collection = this.cloudDB.collection<userInfo>(userInfo) // 实例化用户信息集合对象
   }
 
 
@@ -93,11 +93,25 @@ export default class UserModel {
     })
   }
 
-  /*注册用户(邮箱+密码+验证码)*/
+  /*手机号注册*/
+  async phoneRegister(mobile: string, verifycode: string) {
+    await cloud.auth().createUser({
+      kind: 'phone',
+      countryCode: '86',
+      phoneNumber: mobile,
+      verifyCode: verifycode
+    })
+  }
 
-  /*登录用户(邮箱+密码)*/
-
-  /*登录用户(手机+验证码)*/
+  /*邮箱注册*/
+  async emailRegister(email: string, password: string, verifyCode: string) {
+    await cloud.auth().createUser({
+      kind: 'email',
+      email: email,
+      password: password,
+      verifyCode: verifyCode
+    })
+  }
 
 
   /* 修改密码 */
