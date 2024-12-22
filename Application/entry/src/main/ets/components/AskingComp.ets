@@ -9,7 +9,9 @@ import { Label } from "../enity";
 export struct AskingComp {
   @StorageLink('questionList') questionList: question_list[] = []
   @StorageLink('answerList') answerList: answer_list[] = []
-  // @State answerCount: number[] = []
+  @State answerList_temp: answer_list[] = []
+  @StorageLink('answerCount') answerCount: number[] = []
+  @State isRefreshing: boolean = false
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
@@ -30,24 +32,31 @@ export struct AskingComp {
   // 获取所有数据
   async queryAllData() {
     try {
-      this.questionList = await this.cloudDataBase_question!.query().get()
+      this.questionList = await this.cloudDataBase_question!.query().orderByAsc('id').get()
       this.answerList =
         await this.cloudDataBase_answer!.query().equalTo('uid_question', this.questionList[0].getTitle()).get()
-      // this.answerCount = this.getAnswerCount()
+      this.answerList_temp = await this.cloudDataBase_answer!.query().get()
+      this.answerCount = this.getAnswerCount()
     } catch (e) {
       promptAction.showToast({ message: e.message })
     }
   }
 
   // 获取问题回答数量
-  // getAnswerCount() {
-  //   this.answerList.forEach((item) => {
-  //     if (item.getUid_question() === this.questionList[0].getTitle()) {
-  //       this.answerCount.push(1)
-  //     }
-  //   })
-  //   return this.answerCount
-  // }
+  getAnswerCount() {
+    let count: number[] = []
+    this.questionList.forEach(item => {
+      let count_i = 0 // 问题i的回答数量
+      this.answerList_temp.forEach(answer => {
+        if (answer.uid_question === item.getTitle()) { // 如果回答的uid_question与问题i的标题相同
+          count_i++ // 问题i的回答数量+1
+        }
+      })
+      count.push(count_i)
+    })
+    console.log("回答数量" + JSON.stringify(count))
+    return count
+  }
 
   @Builder
   getQuestionList() {
@@ -67,17 +76,26 @@ export struct AskingComp {
               Text(item.getTitle())
                 .fontSize(20)
                 .fontColor($r('app.color.text_primary'))
-              Text((JSON.parse(item.getLabel()) as Label[])[0].labels)
-                .fontSize(12)
-                .fontColor('#ff00c4ff')
-                .border({ width: 1, color: '#ff00c4ff' })
-                .padding({
-                  left: 15,
-                  right: 15,
-                  top: 5,
-                  bottom: 5
+              Row() {
+                ForEach((JSON.parse(item.label) as Label[]), (item: Label, index) => {
+                  Text(item.labels)
+                    .fontSize(14)
+                    .fontColor('#ff00c4ff')
+                    .border({ width: 1, color: '#ff00c4ff' })
+                    .padding({
+                      left: 15,
+                      right: 15,
+                      top: 5,
+                      bottom: 5
+                    })
+                    .borderRadius(10)
+                  // .onClick(() => {
+                  //   router.pushUrl({ url: "pages/LabelPage/LabelPage", params: { label: item.labels } })
+                  // })
                 })
-                .borderRadius(10)
+
+              }.width('100%')
+
               Row() {
                 Text(item.getPublishTime())
                   .fontSize(12)
@@ -87,7 +105,10 @@ export struct AskingComp {
                   .width(15)
                   .fillColor($r('app.color.text_secondary'))
                 // 回复数量
-                Text(this.answerList.length+'')
+                Text(this.answerCount[index] + '')
+                  .fontSize(12)
+                  .fontColor($r('app.color.text_secondary'))
+                  .margin({ left: 10 })
 
 
               }
@@ -110,9 +131,16 @@ export struct AskingComp {
   }
 
   build() {
-    Column() {
+    Refresh({ refreshing: $$this.isRefreshing }) {
       this.getQuestionList()
     }
     .width('100%')
+    .onRefreshing(() => {
+      this.isRefreshing = true
+      setTimeout(() => {
+        this.queryAllData()
+        this.isRefreshing = false
+      }, 1000)
+    })
   }
 }

@@ -174,178 +174,197 @@ export struct Mine {
   }
 
   build() {
-    Scroll() {
-      Column() {
-        Row() {
-          Image($r('app.media.expansionBar'))
-            .width(30)
-            .aspectRatio(1)
-            .fillColor($r('app.color.white'))
-            .margin(10)
-            .onClick(() => {
-              router.pushUrl({ url: 'pages/home/Mine/expansionBar' })
-            })
+    Stack({ alignContent: Alignment.Top }) {
+      Row() {
+        Image($r('app.media.expansionBar'))
+          .width(30)
+          .aspectRatio(1)
+          .fillColor($r('app.color.white'))
+          .margin(10)
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/home/Mine/expansionBar' })
+          })
 
-          Image($r("app.media.setting_filling"))
-            .width(30)
-            .aspectRatio(1)
-            .fillColor($r('app.color.white'))
-            .margin(10)
-            .onClick(() => {
-              router.pushUrl({ url: 'pages/home/Mine/SettingPage' })
-            })
-        }
-        .margin({ top: 20 })
-        .width('100%')
-        .height(40)
-        .justifyContent(FlexAlign.SpaceBetween)
-        .padding(20)
+        Image($r("app.media.setting_filling"))
+          .width(30)
+          .aspectRatio(1)
+          .fillColor($r('app.color.white'))
+          .margin(10)
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/home/Mine/SettingPage' })
+          })
+      }
+      .margin({ top: 20 })
+      .width('100%')
+      .height(40)
+      .justifyContent(FlexAlign.SpaceBetween)
+      .padding(20)
+      .layoutWeight(1)
 
-        Column({ space: 20 }) {
-          Image(this.data.getPhotoUrl() || $r('app.media.user_dark'))
-            .width(100)
-            .aspectRatio(1)
-
-
-          Text(this.data.getDisplayName() ? this.data.getDisplayName() : '未登录')
-            .fontSize(18)
-            .fontFamily('single')
-            .fontColor($r('app.color.text_primary'))
-
-          Text(this.data.getSignature() || '这个人很懒，什么都没留下')
-            .fontSize(16)
-            .fontFamily('single')
-            .fontColor($r('app.color.text_secondary'))
-            .margin({ bottom: 20 })
-
-        }
-        .width('100%')
-        .margin({ top: 20 })
-        .justifyContent(FlexAlign.Center)
-        .alignItems(HorizontalAlign.Center)
-        .onClick(() => {
-          router.pushUrl({ url: 'pages/home/Mine/MoreMine' })
-        })
-
-        Flex({ direction: FlexDirection.Column }) {
-          Row() {
-            // TODO: 待实现小组件
-            Column() {
-              Text('321K')
-                .fontSize(18)
-                .fontWeight(FontWeight.Bold)
-              Text('关注')
-                .fontSize(14)
-                .fontColor($r('app.color.text_secondary'))
-            }
-
-            Column() {
-              Text('298')
-                .fontSize(18)
-                .fontWeight(FontWeight.Bold)
-              Text('粉丝')
-                .fontSize(14)
-                .fontColor($r('app.color.text_secondary'))
-            }
-
-            Column() {
-              Text('438')
-                .fontSize(18)
-                .fontWeight(FontWeight.Bold)
-              Text('经验值')
-                .fontSize(14)
-                .fontColor($r('app.color.text_secondary'))
-            }
-
-            Button('我的订单')
-              .onClick(() => {
-              })
-              .type(ButtonType.Normal)
+      Scroll() {
+        Column() {
+          Column({ space: 20 }) {
+            Image(this.data.getPhotoUrl() || $r('app.media.user_dark'))
               .width(100)
-              .backgroundColor('#c9a4b0ff')
-              .borderRadius(10)
-              .fontColor('#ff00c4ff')
-          }
-          .margin({ top: 20 })
-          .width('100%')
-          .justifyContent(FlexAlign.SpaceAround)
+              .aspectRatio(1)
+              .borderRadius(50)
 
-          Divider()
-            .color($r('app.color.background_divider'))
-            .strokeWidth(1)
-            .margin({ top: 20 })
 
-          // 旅游攻略
-          Column() {
-            Row() {
-              Text('旅游攻略')
-                .fontSize(18)
-              Text('查看全部')
-                .fontSize(14)
-                .fontColor($r('app.color.text_secondary'))
-                .onClick(() => {
-                  router.pushUrl({ url: 'pages/Travel/AllTravelTips/AllTravelTips' })
-                })
-            }
-            .width('90%')
-            .margin(10)
-            .justifyContent(FlexAlign.SpaceBetween)
-
-            // 获取旅游攻略数据
-            Scroll() {
-              this.getTravelTips()
-            }
-            .scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
-            .scrollBar(BarState.Off)
-          }
-
-          // 旅游手记
-          Column() {
-            Row() {
-              Text('旅游手记')
-                .fontSize(18)
-              Text('查看全部')
-                .fontSize(14)
-                .fontColor($r('app.color.text_secondary'))
-                .onClick(() => {
-                  router.pushUrl({ url: 'pages/Travel/AllTravelNotes/AllTravelNotes' })
-                })
-            }
-            .width('90%')
-            .margin(10)
-            .justifyContent(FlexAlign.SpaceBetween)
-
-            Scroll() {
-              this.getTravelNotes()
-            }
-            .scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
-            .scrollBar(BarState.Off)
-          }
-
-          // 我的问答
-          Column() {
-            Text('我的问答')
+            Text(this.data.getDisplayName() ? this.data.getDisplayName() : '未登录')
               .fontSize(18)
-              .width('100%')
-              .textAlign(TextAlign.Start)
-              .margin({ top: 20 })
+              .fontFamily('single')
+              .fontColor($r('app.color.text_primary'))
+              .onClick(() => {
+                if (this.data.getDisplayName() === undefined) {
+                  router.replaceUrl({ url: 'pages/Register/Registration' })
+                }
+              })
 
-            Scroll() {
-              this.MyQuestion()
-            }.scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
-            .scrollBar(BarState.Off)
+            Text(this.data.getSignature() || '这个人很懒，什么都没留下')
+              .fontSize(16)
+              .fontFamily('single')
+              .fontColor($r('app.color.text_secondary'))
+              .margin({ bottom: 20 })
+
+          }
+          .width('100%')
+          .margin({ top: 20 })
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/home/Mine/MoreMine' })
+          })
+
+          if (this.data.getDisplayName() !== undefined) {
+            Flex({ direction: FlexDirection.Column }) {
+              Row() {
+                // TODO: 待实现小组件
+                Column() {
+                  Text('321K')
+                    .fontSize(18)
+                    .fontWeight(FontWeight.Bold)
+                  Text('关注')
+                    .fontSize(14)
+                    .fontColor($r('app.color.text_secondary'))
+                }
+
+                Column() {
+                  Text('298')
+                    .fontSize(18)
+                    .fontWeight(FontWeight.Bold)
+                  Text('粉丝')
+                    .fontSize(14)
+                    .fontColor($r('app.color.text_secondary'))
+                }
+
+                Column() {
+                  Text('438')
+                    .fontSize(18)
+                    .fontWeight(FontWeight.Bold)
+                  Text('经验值')
+                    .fontSize(14)
+                    .fontColor($r('app.color.text_secondary'))
+                }
+
+                Button('我的订单')
+                  .onClick(() => {
+                  })
+                  .type(ButtonType.Normal)
+                  .width(100)
+                  .backgroundColor('#c9a4b0ff')
+                  .borderRadius(10)
+                  .fontColor('#ff00c4ff')
+              }
+              .margin({ top: 20 })
+              .width('100%')
+              .justifyContent(FlexAlign.SpaceAround)
+
+              Divider()
+                .color($r('app.color.background_divider'))
+                .strokeWidth(1)
+                .margin({ top: 20 })
+
+              // 旅游攻略
+              Column() {
+                Row() {
+                  Text('旅游攻略')
+                    .fontSize(18)
+                  Text('查看全部')
+                    .fontSize(14)
+                    .fontColor($r('app.color.text_secondary'))
+                    .onClick(() => {
+                      router.pushUrl({ url: 'pages/Travel/AllTravelTips/AllTravelTips' })
+                    })
+                }
+                .width('90%')
+                .margin(10)
+                .justifyContent(FlexAlign.SpaceBetween)
+
+                // 获取旅游攻略数据
+                Scroll() {
+                  this.getTravelTips()
+                }
+                .scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
+                .scrollBar(BarState.Off)
+              }
+
+              // 旅游手记
+              Column() {
+                Row() {
+                  Text('旅游手记')
+                    .fontSize(18)
+                  Text('查看全部')
+                    .fontSize(14)
+                    .fontColor($r('app.color.text_secondary'))
+                    .onClick(() => {
+                      router.pushUrl({ url: 'pages/Travel/AllTravelNotes/AllTravelNotes' })
+                    })
+                }
+                .width('90%')
+                .margin(10)
+                .justifyContent(FlexAlign.SpaceBetween)
+
+                Scroll() {
+                  this.getTravelNotes()
+                }
+                .scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
+                .scrollBar(BarState.Off)
+              }
+
+              // 我的问答
+              Column() {
+                Text('我的问答')
+                  .fontSize(18)
+                  .width('100%')
+                  .textAlign(TextAlign.Start)
+                  .margin({ top: 20 })
+
+                Scroll() {
+                  this.MyQuestion()
+                }.scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
+                .scrollBar(BarState.Off)
+              }
+
+            }
+            .width('95%')
+            .height('100%')
+            .backgroundColor($r('app.color.white'))
+            .borderRadius(10)
+            .padding({ left: 20, right: 20 })
+          } else {
+            Text('请登录后查看更多哦~')
+              .fontSize(16)
+              .fontColor($r('app.color.text_secondary'))
+              .textAlign(TextAlign.Center)
+              .margin({ top: 20 })
           }
 
         }
-        .width('95%')
-        .height('100%')
-        .backgroundColor($r('app.color.white'))
-        .borderRadius(10)
-        .padding({ left: 20, right: 20 })
 
       }
-
+      .margin({ top: 40 })
       .width('100%')
+      .scrollBar(BarState.Off)
     }
     .backgroundImage($r('app.media.fengjing3'))
     .backgroundImageSize(ImageSize.Auto)

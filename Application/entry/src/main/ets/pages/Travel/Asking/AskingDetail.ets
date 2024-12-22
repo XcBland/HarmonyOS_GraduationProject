@@ -19,6 +19,7 @@ struct AskingDetail {
   @State questionList: question_list[] = [] // 问题列表
   @StorageLink('answer_list') answerList: answer_list[] = [] // 回答列表
   @State answerList_temp: answer_list[] = [] // 回答列表临时
+  @State answerCount: number = 0 // 回答数量
   // @State answerList_copy: answer_list[] = [] // 回答列表副本
   @State content: string = '' // 回答内容
   @State isRefreshing: boolean = false
@@ -57,7 +58,7 @@ struct AskingDetail {
       this.answerList_temp =
         await this.cloudDataBase_answer!.query().equalTo('uid_question', this.questionList[0].getTitle()).get()
       this.allPage = Math.ceil(this.answerList_temp.length / this.pageSize) // 计算总页数
-
+      this.answerCount = this.answerList_temp.length // 回答数量
     } catch (e) {
       console.log("queryAll error: " + e.message)
     }
@@ -151,6 +152,11 @@ struct AskingDetail {
     .margin({ top: 20 })
   }
 
+  // 获取回答数量
+  getAnswerCount() {
+    return this.answerList_temp.length
+  }
+
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
       Scroll() {
@@ -172,7 +178,7 @@ struct AskingDetail {
             ListItem() {
               Column() {
                 Row() {
-                  Text(`全部回答(${this.answerList_temp.length})`)
+                  Text(`全部回答(${this.answerCount})`)
                     .fontSize(20)
                     .fontWeight(FontWeight.Bold)
                     .textAlign(TextAlign.Start)
@@ -213,6 +219,7 @@ struct AskingDetail {
                           .width('90%')
                         }
                       }.margin(20)
+
                     })
                   }
                   .width('90%')
@@ -221,6 +228,18 @@ struct AskingDetail {
                   .onReachEnd(async () => {
                     console.log('到底了')
                     // 如果到底了，则加载下一页数据
+                    // if (this.pageIndex < this.allPage - 1) {
+                    //   this.pageIndex += 1
+                    //   this.isRefreshing = true
+                    //   this.promptText = "Loading..."
+                    //   await this.queryAll()
+                    //     .then(() => {
+                    //       this.answerList = [...this.answerList] // 刷新数据
+                    //     })
+                    //   this.isRefreshing = false
+
+                    // }
+
 
                   })
                 }
@@ -251,7 +270,7 @@ struct AskingDetail {
       .layoutWeight(1)
 
       Row() {
-        TextInput({ placeholder: "善语结善缘 恶语伤人心" })
+        TextInput({ placeholder: "善语结善缘 恶语伤人心", text: this.content })
           .width('70%')
           .height(40)
           .onChange((content) => {
@@ -267,6 +286,10 @@ struct AskingDetail {
             }
             this.uploadAnswer(this.content)
             this.content = ''
+            this.queryAll()
+            this.answerList_temp = [...this.answerList_temp] // 刷新数据
+            this.answerCount = this.answerList_temp.length // 刷新回答数量
+
 
           })
       }

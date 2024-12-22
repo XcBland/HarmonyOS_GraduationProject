@@ -1,4 +1,3 @@
-
 import { fileIo as fs } from "@kit.CoreFileKit"
 import { HmNavBar } from '../../../components'
 import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
@@ -48,10 +47,6 @@ struct ClearCache {
 
   build() {
     Column() {
-      Row()
-        .width('100%')
-        .height(AppStorage.get(APP_TOP_HEIGHT))
-        .backgroundColor($r("app.color.white"))
       HmNavBar({ title: '清理缓存' })
       Scroll() {
         Column({ space: 10 }) {
@@ -89,8 +84,8 @@ struct ClearCache {
     .alignItems(HorizontalAlign.Center)
     .backgroundImage($r('app.media.fengjing7'))
     .padding({
-      top:AppStorage.get<number>(APP_TOP_HEIGHT),
-      bottom:AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+      top: AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom: AppStorage.get<number>(APP_BOTTOM_HEIGHT)
     })
   }
 }

@@ -45,7 +45,7 @@ export struct HmDetailNav {
                   value: 'ok',
                   action: () => {
                     this.onDeleteClick()
-                    router.replaceUrl({url:'pages/home/Index'})
+                    router.replaceUrl({ url: 'pages/home/Index' })
                   }
                 },
               })
@@ -53,6 +53,9 @@ export struct HmDetailNav {
           Image($r('app.media.write'))
             .width(34)
             .height(34)
+            .onClick(() => {
+              this.onRouterClick()
+            })
         }
       }
 

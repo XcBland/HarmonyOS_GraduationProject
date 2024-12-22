@@ -111,25 +111,15 @@ struct Browsing_History {
         .borderWidth(1)
 
       })
-      GridItem() {
-        Row() {
-          Button("清空浏览记录")
-            .type(ButtonType.Normal)
-            .width('50%')
-            .borderRadius(10)
-            .backgroundColor($r('app.color.primary'))
-            .onClick(() => {
-              this.confimDialog.open()
-            })
-        }.width('100%')
-      }
 
     }
     .columnsTemplate('1fr 1fr') // 设置网格布局为2列
     .columnsGap(10) // 设置网格列间距
     .rowsGap(10) // 设置网格行间距
     .padding(10) // 设置网格内边距
-
+    .scrollBar(BarState.Off)
+    .height('90%')
+    .width('100%')
 
   }
 
@@ -141,9 +131,21 @@ struct Browsing_History {
       } else {
         Column() {
           this.getHistoryList()
-
+          Row() {
+            Button("清空浏览记录")
+              .type(ButtonType.Normal)
+              .width('50%')
+              .borderRadius(10)
+              .backgroundColor($r('app.color.primary'))
+              .onClick(() => {
+                this.confimDialog.open()
+              })
+          }.width('100%')
+          .justifyContent(FlexAlign.Center)
+          .alignItems(VerticalAlign.Center)
         }
         .width('100%')
+        .height('100%')
       }
 
     }

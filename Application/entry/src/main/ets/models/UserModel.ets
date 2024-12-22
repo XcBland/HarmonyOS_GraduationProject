@@ -155,7 +155,7 @@ export default class UserModel {
    * 账号重认证
    *
    * */
-  reAuth(password: string, email: string, verifyCode: string) {
+  reAuth( email: string, verifyCode: string) {
     cloud.auth().getCurrentUser().then(user => {
       if (!user) {
         return
@@ -163,7 +163,6 @@ export default class UserModel {
       user.userReauthenticate({
         credentialInfo: {
           kind: "email",
-          password: password,
           email: email,
           verifyCode: verifyCode
         }

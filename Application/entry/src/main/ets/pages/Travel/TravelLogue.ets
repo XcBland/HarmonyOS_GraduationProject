@@ -11,6 +11,7 @@ import { CommonRouterParams } from '../../models'
 import { Label } from '../../enity/labelArray'
 import { ImageList } from '../../enity/ImageList'
 import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants'
+import { RecommendDialog } from '../../components'
 
 @Entry
 @Component
@@ -22,9 +23,16 @@ struct TravelLogue {
   // 云数据库存储区
   private cloudDBZone = 'Graduation';
   cloudDataBase: DatabaseCollection<travel_tips> | null = null
+  // 推荐好友弹窗
+  recommendFriends: CustomDialogController = new CustomDialogController({
+    builder: RecommendDialog(),
+    autoCancel: true,
+    customStyle: true,
+    alignment: DialogAlignment.Bottom
+  })
 
   async onPageShow() {
-    font.getFontByName('queen')
+    // font.getFontByName('queen')
     this.cloudDB = cloud.database({
       objectTypeInfo: schema,
       zoneName: this.cloudDBZone,
@@ -71,7 +79,7 @@ struct TravelLogue {
           await this.deleteById()
         },
         onRouterClick: () => {
-
+          this.recommendFriends.open()
         }
       })
       List() {
@@ -108,8 +116,9 @@ struct TravelLogue {
 
 
               Row({ space: 5 }) {
-                ForEach((JSON.parse(item.label) as Label[]), (item: Label, index) => {
-                  Text(item.labels)
+                Text((JSON.parse(item.label) as Label[]).map(item => item.labels).join(''))
+                /*
+                Text(item.labels)
                     .fontSize(16)
                     .backgroundColor('#ff6a7efd')
                     .fontColor($r('app.color.white'))
@@ -123,7 +132,7 @@ struct TravelLogue {
                       top: 5,
                       bottom: 5
                     })
-                })
+                */
               }
               .width('100%')
 

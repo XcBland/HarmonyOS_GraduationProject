@@ -119,6 +119,7 @@ export struct PassWordUpdateDialog {
   @State phoneNumber: string = ''
   @State verifyCode: string = ''
   @State password: string = ''
+  @State text: string = '' // 重认证输入框内容
 
   @Builder
   userReAuth() {
@@ -129,32 +130,49 @@ export struct PassWordUpdateDialog {
           .fontWeight(FontWeight.Bold)
       }.width('100%').justifyContent(FlexAlign.Center).margin({ top: 30 })
 
-      Row() {
-        Text('邮 箱  ' + this.userInfo.getEmail())
-          .width('90%')
-          .backgroundColor($r('app.color.white')).height(40).margin({ left: 15 })
+      if (this.userInfo.getEmail() !== undefined) {
+        Row() {
+          Text('邮 箱  ' + this.userInfo.getEmail())
+            .width('90%')
+            .backgroundColor($r('app.color.white')).height(40).margin({ left: 15 })
+        }
+        .width('90%')
+        .height(40)
+        .margin(10)
+        .borderRadius(0)
+        .borderWidth(1)
+      } else {
+        Row() {
+          TextInput({ placeholder: '请输入手机号/邮箱' })
+            .backgroundColor($r('app.color.white'))
+            .height(40)
+            .onChange((value) => {
+              this.text = value
+            })
+        }
+        .width('90%')
+        .height(40)
+        .margin(10)
+        .borderRadius(0)
+        .borderWidth(1)
       }
-      .width('90%')
-      .height(40)
-      .margin(10)
-      .borderRadius(0)
-      .borderWidth(1)
 
-      Row() {
-        TextInput({ placeholder: '请输入密码' })
-          .type(InputType.Password)
-          .onChange((value) => {
-            this.password = value
-          })
-          .width('100%')
-          .backgroundColor($r('app.color.white'))
-          .height(40)
-      }
-      .width('90%')
-      .height(40)
-      .margin(10)
-      .borderRadius(0)
-      .borderWidth(1)
+
+      // Row() {
+      //   TextInput({ placeholder: '请输入密码' })
+      //     .type(InputType.Password)
+      //     .onChange((value) => {
+      //       this.password = value
+      //     })
+      //     .width('100%')
+      //     .backgroundColor($r('app.color.white'))
+      //     .height(40)
+      // }
+      // .width('90%')
+      // .height(40)
+      // .margin(10)
+      // .borderRadius(0)
+      // .borderWidth(1)
 
       Row() {
         TextInput({ placeholder: '请输入验证码' })
@@ -183,7 +201,7 @@ export struct PassWordUpdateDialog {
         .borderRadius(10)
         .borderWidth(1)
         .onClick(async () => {
-          this.userInstance.reAuth(this.password, this.userInfo.getEmail(), this.verifyCode)
+          this.userInstance.reAuth(this.userInfo.getEmail(), this.verifyCode)
           if (this.passwordController !== undefined) {
             this.passwordController.close()
           }
@@ -202,7 +220,7 @@ export struct PassWordUpdateDialog {
     Column() {
       Row() {
         Row() {
-          Text('修改密码')
+          Text(this.userInfo.getEmail() !== undefined ? '修改密码' : '忘记密码')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
         }.width('100%').justifyContent(FlexAlign.Center).margin({ top: 30 })
