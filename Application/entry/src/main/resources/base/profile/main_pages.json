@@ -29,6 +29,8 @@
     "pages/home/Hotel/AllHotels",
     "pages/Search/SearchPage",
     "pages/Travel/Asking/Asking",
-    "pages/Travel/Asking/AskingDetail"
+    "pages/Travel/Asking/AskingDetail",
+    "pages/Navigation/NavigationPage",
+    "pages/LabelPage/LabelPage"
   ]
 }

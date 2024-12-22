@@ -4,7 +4,7 @@
  */
 import { hotel } from '../../../../enity/hotel'
 import { font, promptAction, router } from '@kit.ArkUI'
-import CommonRouterParams from '../../../../models/router'
+import { CommonRouterParams } from '../../../../models'
 import cloud, { Database, DatabaseCollection } from '@hw-agconnect/cloud'
 import { HmNavBar } from '../../../../components'
 import schema from '../../../../../resources/rawfile/My_Gradute_Project_3_cn.json'

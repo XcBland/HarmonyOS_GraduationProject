@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图导航</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+        }
+        #container {
+          width: 100%;
+          height: 100vh;
+          background-color: pink;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+    window._AMapSecurityConfig = {
+      securityJsCode: "d92f131b6b7d50b80d9f24b746ea3d03",
+    };
+</script>
+<script
+        type="text/javascript"
+        src="https://webapi.amap.com/maps?v=2.0&key=262215d3d9d6f50b70725c00b484018c"
+></script>
+<script type="text/javascript">
+    //地图初始化应该在地图容器 <div> 已经添加到 DOM 树之后
+    var map = new AMap.Map("container", {
+      zoom: 18,//地图缩放级别
+      center:[117.190182, 39.125596] //中心点坐标
+    });
+
+    //窗体加载完成后执行的方法
+    window.onload=function(){
+        window.swift.setCurrentLocation() //调用鸿蒙端方法进行定位
+
+        //setLocation()
+    }
+
+    //设置地图的中心点位置
+    function setLocation(lon, lat){
+
+        map.setZoomAndCenter(18,[lon,lat])
+
+        //设置当前位置
+        const content = `<div class="custom-content-marker"><img src="https://a.amap.com/jsapi_demos/static/demo-center/icons/dir-via-marker.png"></div>`;
+        const marker = new AMap.Marker({
+            content: content, //自定义点标记覆盖物内容
+            position: [lon, lat], //基点位置
+            offset: new AMap.Pixel(-13, -30), //相对于基点的偏移位置
+        });
+        map.add(marker);
+
+        //搜索最近的几个地点
+        map.plugin(['AMap.PlaceSearch'], function() {
+            var PlaceSearchOptions = { //设置PlaceSearch属性
+                pageSize: 4, //每页结果数,默认10
+                pageIndex: 1, //请求页码，默认1
+                map: map,
+                extensions: "base" //返回信息详略，默认为base（基本信息）
+            };
+            var MSearch = new AMap.PlaceSearch(PlaceSearchOptions); //构造PlaceSearch类
+            AMap.Event.addListener(MSearch, "complete", (result)=>{
+                window.swift.receiveData(JSON.stringify(result?.poiList?.pois||[]))
+            }); //返回结果
+            MSearch.searchNearBy('天津', new AMap.LngLat(lon,lat)); //关键字查询
+        });
+    }
+</script>

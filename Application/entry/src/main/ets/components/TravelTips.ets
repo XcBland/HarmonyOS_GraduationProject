@@ -8,14 +8,15 @@ import dayjs from "@hview/dayjs";
 
 @Component
 export struct TravelTips {
-  @StorageLink('travelTips') travelTips:travel_tips[] = [];
+  @StorageLink('travelTips') travelTips: travel_tips[] = [];
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
   private cloudDBZone = 'Graduation';
   cloudDataBase1: DatabaseCollection<travel_tips> | null = null
   cloudDataBase2: DatabaseCollection<history_tips> | null = null
-  async aboutToAppear(){
+
+  async aboutToAppear() {
 
     this.cloudDB = cloud.database({
       objectTypeInfo: schema,
@@ -25,6 +26,7 @@ export struct TravelTips {
     this.cloudDataBase2 = this.cloudDB.collection<history_tips>(history_tips) // 获取云数据库的集合
     await this.queryAllTravelTips()
   }
+
   // 获取云数据库数据
   async queryAllTravelTips() {
     try {
@@ -35,11 +37,11 @@ export struct TravelTips {
   }
 
   // 点击数据之后，上传到历史记录
-  async upLoadTravelTipsToHistory(travelTip: travel_tips){
+  async upLoadTravelTipsToHistory(travelTip: travel_tips) {
     try {
       const user = await cloud.auth().getCurrentUser()
       const historyTip = new history_tips()
-      historyTip.setId(travelTip.getUserid() + user!.getUid() )     // 时间戳+uid
+      historyTip.setId(travelTip.getId() + "_" + user!.getUid()) // 时间戳+uid
       historyTip.setTitle(travelTip.getTitle())
       historyTip.setSubtitle(travelTip.getSubtitle())
       historyTip.setContent(travelTip.getContent())
@@ -47,14 +49,15 @@ export struct TravelTips {
       historyTip.setLabel(travelTip.getLabel())
       historyTip.setScanTime(dayjs().format('YYYY-MM-DD HH:mm:ss'))
       await this.cloudDataBase2!.upsert(historyTip)
-    }catch(e){
-      console.log("history upload failed "+e)
+    } catch (e) {
+      console.log("history upload failed " + e)
     }
   }
+
   build() {
-    Grid(){
-      ForEach(this.travelTips, (item:travel_tips, index) => {
-        GridItem(){
+    Grid() {
+      ForEach(this.travelTips, (item: travel_tips, index) => {
+        GridItem() {
           Column() {
             Image((JSON.parse(item.getPhotoUrl()) as ImageList[])[0].url
               ||
@@ -94,10 +97,10 @@ export struct TravelTips {
         .borderWidth(1)
       })
     }
-    .columnsTemplate('1fr 1fr')   // 设置网格布局为2列
-    .columnsGap(10)   // 设置网格列间距
-    .rowsGap(10)   // 设置网格行间距
-    .padding(10)   // 设置网格内边距
+    .columnsTemplate('1fr 1fr') // 设置网格布局为2列
+    .columnsGap(10) // 设置网格列间距
+    .rowsGap(10) // 设置网格行间距
+    .padding(10) // 设置网格内边距
 
   }
 }

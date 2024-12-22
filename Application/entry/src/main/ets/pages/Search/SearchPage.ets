@@ -8,7 +8,7 @@ import { hotel } from '../../enity/hotel';
 import { travel_notes } from '../../enity/travel_notes';
 import { travel_tips } from '../../enity/travel_tips';
 import { router } from '@kit.ArkUI';
-import CommonRouterParams from '../../models/router';
+import { CommonRouterParams } from '../../models';
 import { HmNavBar } from '../../components';
 import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants';
 import { question_list } from '../../enity/question_list';

@@ -5,8 +5,9 @@ import schema from '../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { promptAction, router } from '@kit.ArkUI'
 import { userInfo_01 as userInfo } from '../../enity/userInfo'
 import { HmNavBar, PhoneRegisterDialog } from '../../components'
-import {AgUser } from '../../enity/AgUser'
+import { AgUser } from '../../enity/AgUser'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants'
 
 
 /**
@@ -32,12 +33,13 @@ struct Registration {
   cloudPath: string | undefined = '';
   authUser: AuthUser | null = null;
   userInfo: UserInfo | null = new UserInfo(); // 用户信息
-  userInstance:UserModel = UserModel.getInstance()
+  userInstance: UserModel = UserModel.getInstance()
   @State resultArray: userInfo[] = []
 
   async aboutToAppear() {
     this.userInstance.logOut()
   }
+
   // 手机注册弹窗
   phoneRegisterDialog: CustomDialogController = new CustomDialogController({
     builder: PhoneRegisterDialog(),
@@ -102,7 +104,6 @@ struct Registration {
     return imgUri
   }
 
-
   /*邮箱注册*/
   async emailRegister() {
     try {
@@ -155,7 +156,6 @@ struct Registration {
       console.error('hmlog-->', 'addUser Failed. Err:', JSON.stringify(e))
     }
   }
-
 
   build() {
     Column() {
@@ -365,6 +365,10 @@ struct Registration {
     .backgroundImageSize(ImageSize.Auto)
     .width('100%')
     .height('100%')
+    .padding({
+      top: AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom: AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
 
   }
 }

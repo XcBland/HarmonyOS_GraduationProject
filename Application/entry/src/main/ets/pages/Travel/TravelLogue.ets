@@ -7,7 +7,7 @@ import schema from '../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { HmDetailNav } from '../../components/DetailNav'
 import { travel_tips } from '../../enity/travel_tips'
 import { App, font, promptAction, router } from '@kit.ArkUI'
-import CommonRouterParams from '../../models/router'
+import { CommonRouterParams } from '../../models'
 import { Label } from '../../enity/labelArray'
 import { ImageList } from '../../enity/ImageList'
 import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants'
@@ -38,7 +38,9 @@ struct TravelLogue {
   async query() {
     try {
       const params = router.getParams() as CommonRouterParams
-      this.travelNote = await this.cloudDataBase!.query().equalTo('id', params.id).get()
+      this.travelNote = await this.cloudDataBase!.query()
+        .equalTo('id', params.id)
+        .get()
       console.log("TravelLogue query success: " + JSON.stringify(this.travelNote))
     } catch (e) {
       promptAction.showToast({ message: e.message })
@@ -113,6 +115,7 @@ struct TravelLogue {
                     .fontColor($r('app.color.white'))
                     .borderRadius(10)
                     .width(90)
+                    .height(40)
                     .textAlign(TextAlign.Center)
                     .padding({
                       left: 10,

@@ -7,7 +7,7 @@ import { AdvertClass } from '../models'
 const defaultAd: AdvertClass = {
   showAd: true,
   adTime: 5,
-  adImg: $r("app.media.fengjing9")  //默认启动页广告图片(得换)
+  adImg: $r("app.media.LeTo_01")  //默认启动页广告图片(得换)
 }
 
 

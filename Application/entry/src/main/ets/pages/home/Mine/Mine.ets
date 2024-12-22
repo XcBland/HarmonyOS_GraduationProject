@@ -275,7 +275,6 @@ export struct Mine {
             .strokeWidth(1)
             .margin({ top: 20 })
 
-          // TODO: 待实现(组件）
           // 旅游攻略
           Column() {
             Row() {
@@ -297,7 +296,7 @@ export struct Mine {
               this.getTravelTips()
             }
             .scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
-
+            .scrollBar(BarState.Off)
           }
 
           // 旅游手记
@@ -320,7 +319,7 @@ export struct Mine {
               this.getTravelNotes()
             }
             .scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
-
+            .scrollBar(BarState.Off)
           }
 
           // 我的问答
@@ -333,8 +332,8 @@ export struct Mine {
 
             Scroll() {
               this.MyQuestion()
-            }
-
+            }.scrollable(ScrollDirection.Horizontal) // 滚动方向:  水平
+            .scrollBar(BarState.Off)
           }
 
         }
