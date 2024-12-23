@@ -17,7 +17,6 @@ export struct Mine {
   @State phone: string = ''
   @State photoUrl: string = ''
   @State displayName: string = ''
-  // @StorageLink('user') currentUser: AgUser | undefined = AppStorage.get<AgUser>('user')
   @StorageLink('local_userInfo') data: userInfo = new userInfo()
   @StorageLink('travelTips') travelTips: travel_tips[] = []
   @StorageLink('travelNotes') travelNotes: travel_notes[] = []
@@ -57,6 +56,7 @@ export struct Mine {
       this.travelNotes = await this.cloudDataBase2!.query().get()
       this.questionList = await this.cloudDataBase3!.query().contains('uid', this.user?.getUid()).get()
       this.answerList = await this.cloudDataBase4!.query().get()
+      //this.answerList_temp = await this.cloudDataBase4!.query().get()
     } catch (e) {
       promptAction.showToast({ message: e.message })
     }
@@ -154,7 +154,7 @@ export struct Mine {
             Image($r('app.media.answer'))
               .width(15)
               .fillColor($r('app.color.text_secondary'))
-            Text(this.answerList.length.toString())
+            Text(this.answerList.filter(answer => answer.uid_question === item.getTitle()).length + '')
               .margin({ left: 5 })
               .fontSize(12)
               .fontColor($r('app.color.text_secondary'))

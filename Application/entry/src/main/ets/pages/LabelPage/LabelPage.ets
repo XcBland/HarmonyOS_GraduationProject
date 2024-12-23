@@ -67,9 +67,11 @@ struct LabelPage {
                 .margin({ top: 10 })
               ForEach(this.travelTips, (item: travel_tips, index) => {
                 Column() {
-                  Text(item.title)
-
+                  Text('攻略标题:' + item.title)
+                    .textAlign(TextAlign.Center)
                 }
+                .justifyContent(FlexAlign.Center)
+                .width('100%')
                 .onClick(() => {
                   router.pushUrl({ url: 'pages/Travel/TravelLogue', params: { id: index + 1 } })
                 })
@@ -88,9 +90,11 @@ struct LabelPage {
                 .margin({ top: 10 })
               ForEach(this.travelNotes, (item: travel_notes, index) => {
                 Column() {
-                  Text(item.title)
+                  Text('游记标题:' + item.title)
 
                 }
+                .justifyContent(FlexAlign.Center)
+                .width('100%')
                 .onClick(() => {
                   router.pushUrl({ url: 'pages/Travel/TravelNote', params: { id: index + 1 } })
                 })
@@ -110,12 +114,12 @@ struct LabelPage {
                 .margin({ top: 10 })
               ForEach(this.questions, (item: question_list, index) => {
                 Column() {
-                  Text(item.title)
-                  Text(item.content)
-                    .width('100%')
-                    .textAlign(TextAlign.Start)
+                  Text('问题：' + item.title)
+                  Text('问题的具体内容:' + item.content)
                     .margin({ top: 10, left: 10 })
                 }
+                .justifyContent(FlexAlign.Center)
+                .width('100%')
                 .onClick(() => {
                   router.pushUrl({ url: 'pages/Travel/Asking/AskingDetail', params: { id: index + 1 } }) // 跳转到问答详情页面
                 })
