@@ -107,6 +107,7 @@ struct TravelLogue {
                   }
                 })
               }
+              .scrollBar(BarState.Off)
               .listDirection(Axis.Horizontal) // 列表方向: 水平
               Text(item.content)
                 .fontSize(20)

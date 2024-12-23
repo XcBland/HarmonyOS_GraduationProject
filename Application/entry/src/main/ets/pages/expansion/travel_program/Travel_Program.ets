@@ -1,20 +1,21 @@
+/**
+ * @Auhtor DLY
+ *
+ */
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
+
 @Entry
 @Component
-struct Travel_Program {
-  @State message: string = 'Hello World';
-
+struct TravelProgram {
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('Travel_ProgramHelloWorld')
-        .fontSize(50)
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
+    Column() {
     }
-    .height('100%')
     .width('100%')
+    .height('100%')
+    .padding({
+      top: AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom: AppStorage.get<number>(APP_BOTTOM_HEIGHT)
+    })
+
   }
 }
