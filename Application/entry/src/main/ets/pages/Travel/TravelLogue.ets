@@ -11,7 +11,7 @@ import { CommonRouterParams } from '../../models'
 import { Label } from '../../enity/labelArray'
 import { ImageList } from '../../enity/ImageList'
 import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants'
-import { RecommendDialog } from '../../components'
+import { HmPreview, RecommendDialog } from '../../components'
 
 @Entry
 @Component
@@ -29,6 +29,16 @@ struct TravelLogue {
     autoCancel: true,
     customStyle: true,
     alignment: DialogAlignment.Bottom
+  })
+  // 图片显示弹窗
+  preview: CustomDialogController = new CustomDialogController({
+    builder: HmPreview({
+      urls: (JSON.parse(this.travelNote[0].photoUrl) as ImageList[]).map(item => item.url), // 图片数组
+      selectIndex: this.selectIndex // 默认选中第一张图片
+    }),
+    customStyle: true, // 自定义样式
+    alignment: DialogAlignment.Center, // 居中显示
+    autoCancel: true                // 点击空白处自动关闭弹窗
   })
 
   async onPageShow() {
@@ -104,6 +114,10 @@ struct TravelLogue {
                       .width(150)
                       .height(150)
                       .borderRadius(10)
+                      .onClick(() => {
+                        this.selectIndex = index
+                        this.preview.open()
+                      })
                   }
                 })
               }
