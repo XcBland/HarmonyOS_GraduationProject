@@ -54,6 +54,8 @@ struct SearchPage {
         .contains('subtitle', params.keyword)
         .or()
         .contains('content', params.keyword)
+        .or()
+        .contains('label', params.keyword)
         .get()
     } catch (e) {
       console.log('queryNotes error:' + e.message)
@@ -87,6 +89,8 @@ struct SearchPage {
         .contains('subtitle', params.keyword)
         .or()
         .contains('content', params.keyword)
+        .or()
+        .contains('label', params.keyword)
         .get()
     } catch (e) {
       console.log('queryNotes error:' + e.message)
@@ -103,6 +107,8 @@ struct SearchPage {
         .contains('title', params.keyword)
         .or()
         .contains('content', params.keyword)
+        .or()
+        .contains('label', params.keyword)
         .get()
     } catch (e) {
       console.log('queryQuestions error:' + e.message)

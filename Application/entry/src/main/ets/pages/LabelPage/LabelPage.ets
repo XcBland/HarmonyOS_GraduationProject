@@ -43,13 +43,13 @@ struct LabelPage {
   async getAllLabels() {
     const params = router.getParams() as CommonRouterParams
     this.travelTips = await this.cloudDataBase1!.query()
-      .contains('label', params.label)
+      .contains('label', params.keyword)
       .get()
     this.travelNotes = await this.cloudDataBase2!.query()
-      .contains('label', params.label)
+      .contains('label', params.keyword)
       .get()
     this.questions = await this.cloudDataBase4!.query()
-      .contains('label', params.label)
+      .contains('label', params.keyword)
       .get()
   }
 

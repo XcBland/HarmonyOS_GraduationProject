@@ -116,6 +116,9 @@ struct TravelNote {
                       top: 5,
                       bottom: 5
                     })
+                    .onClick(() => {
+                      router.replaceUrl({ url: 'pages/LabelPage/LabelPage', params: { keyword: item.labels } })
+                    })
                 })
               }
               .width('100%')

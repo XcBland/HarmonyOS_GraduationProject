@@ -123,7 +123,7 @@ struct AskingDetail {
               })
               .borderRadius(10)
               .onClick(() => {
-                router.pushUrl({ url: "pages/LabelPage/LabelPage", params: { label: item.labels } })
+                router.pushUrl({ url: "pages/LabelPage/LabelPage", params: { keyword: item.labels } })
               })
           })
 

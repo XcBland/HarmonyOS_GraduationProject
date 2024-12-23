@@ -116,23 +116,29 @@ struct TravelLogue {
 
 
               Row({ space: 5 }) {
-                Text((JSON.parse(item.label) as Label[]).map(item => item.labels).join(''))
-                /*
-                Text(item.labels)
-                    .fontSize(16)
-                    .backgroundColor('#ff6a7efd')
-                    .fontColor($r('app.color.white'))
-                    .borderRadius(10)
-                    .width(90)
-                    .height(40)
+                ForEach((JSON.parse(item.getLabel()) as Label[]), (item: Label, index: number) => {
+                  Text(item.labels)
+                    .fontSize(14)
+                    .fontColor($r('app.color.text_primary'))
+                    .fontFamily('queen')
                     .textAlign(TextAlign.Center)
+                    .fontColor('#ff00bbff')
+                    .lineHeight(25)
                     .padding({
                       left: 10,
                       right: 10,
                       top: 5,
                       bottom: 5
                     })
-                */
+                    .borderRadius(10)
+                    .margin({ top: 10, bottom: 10 })
+                    .borderWidth(1)
+                    .borderColor('#f0bf')
+                    .onClick(() => {
+                      router.replaceUrl({ url: 'pages/LabelPage/LabelPage', params: { keyword: item.labels } })
+                    })
+                })
+
               }
               .width('100%')
 
