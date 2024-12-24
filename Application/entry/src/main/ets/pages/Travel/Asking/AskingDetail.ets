@@ -3,10 +3,10 @@
  *
  */
 import { question_list } from '../../../enity/question_list'
-import cloud, { Database, DatabaseCollection } from '@hw-agconnect/cloud'
+import cloud, { AuthUser, Database, DatabaseCollection } from '@hw-agconnect/cloud'
 import schema from '../../../../resources/rawfile/My_Gradute_Project_3_cn.json'
 import { answer_list } from '../../../enity/answer_list'
-import { router } from '@kit.ArkUI'
+import { promptAction, router } from '@kit.ArkUI'
 import { CommonRouterParams } from '../../../models'
 import { Label } from '../../../enity'
 import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../../constants'
@@ -28,6 +28,7 @@ struct AskingDetail {
   @State pageIndex: number = 0 // 当前页数
   @State allPage: number = 1 // 总页数
   @State loading: boolean = false // 加载中
+  @State user: AuthUser | null = null // 当前用户信息
   // CloudDB API
   private cloudDB: Database | null = null;
   // 云数据库存储区
@@ -281,14 +282,19 @@ struct AskingDetail {
           .margin({ right: 30 })
           .fontSize(14)
           .onClick(() => {
-            if (this.content.trim() === '') {
-              return
+            if (this.user?.getUid()) {
+              if (this.content.trim() === '') {
+                return
+              }
+              this.uploadAnswer(this.content)
+              this.content = ''
+              this.queryAll()
+              this.answerList_temp = [...this.answerList_temp] // 刷新数据
+              this.answerCount = this.answerList_temp.length // 刷新回答数量
+            } else {
+              this.content = ''
+              promptAction.showToast({ message: "请先登录才可以发送自己的看法哦~" })
             }
-            this.uploadAnswer(this.content)
-            this.content = ''
-            this.queryAll()
-            this.answerList_temp = [...this.answerList_temp] // 刷新数据
-            this.answerCount = this.answerList_temp.length // 刷新回答数量
 
 
           })

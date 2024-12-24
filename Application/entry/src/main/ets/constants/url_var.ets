@@ -1,1 +1,1 @@
-export const BASE_URL = "http://apis.juhe.cn/fapigx/scenic/query"
+export const BASE_URL = "http://apis.juhe.cn/simpleWeather/query"

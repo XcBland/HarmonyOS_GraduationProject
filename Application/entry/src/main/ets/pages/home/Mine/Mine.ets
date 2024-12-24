@@ -46,7 +46,9 @@ export struct Mine {
     this.cloudDataBase2 = this.cloudDB.collection<travel_notes>(travel_notes) // 获取旅游笔记云数据库的集合
     this.cloudDataBase3 = this.cloudDB.collection<question_list>(question_list) // 获取问题云数据库的集合
     this.cloudDataBase4 = this.cloudDB.collection<answer_list>(answer_list) // 获取回答云数据库的集合
-    await this.queryAllTravelLogue() // 查询数据库
+    if (this.user?.getUid()) {
+      await this.queryAllTravelLogue() // 查询数据库
+    }
   }
 
   // 查询数据库
@@ -58,7 +60,8 @@ export struct Mine {
       this.answerList = await this.cloudDataBase4!.query().get()
       //this.answerList_temp = await this.cloudDataBase4!.query().get()
     } catch (e) {
-      promptAction.showToast({ message: e.message })
+      // promptAction.showToast({ message: e.message })
+      console.error('queryMine' + e.message)
     }
   }
 
@@ -216,7 +219,7 @@ export struct Mine {
               .fontColor($r('app.color.text_primary'))
               .onClick(() => {
                 if (this.data.getDisplayName() === undefined) {
-                  router.replaceUrl({ url: 'pages/Register/Registration' })
+                  router.replaceUrl({ url: 'pages/Login/LoginIndex' })
                 }
               })
 
@@ -266,14 +269,14 @@ export struct Mine {
                     .fontColor($r('app.color.text_secondary'))
                 }
 
-                Button('我的订单')
-                  .onClick(() => {
-                  })
-                  .type(ButtonType.Normal)
-                  .width(100)
-                  .backgroundColor('#c9a4b0ff')
-                  .borderRadius(10)
-                  .fontColor('#ff00c4ff')
+                /*                Button('我的订单')
+                                  .onClick(() => {
+                                  })
+                                  .type(ButtonType.Normal)
+                                  .width(100)
+                                  .backgroundColor('#c9a4b0ff')
+                                  .borderRadius(10)
+                                  .fontColor('#ff00c4ff')*/
               }
               .margin({ top: 20 })
               .width('100%')

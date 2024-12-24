@@ -97,7 +97,7 @@ struct Account_Management {
           Blank()
 
 
-          Button(this.userInfo.getPhoneNum() !== '' ? '修改' : '绑定')
+          Button(this.userInfo.getPhoneNum() ? '修改' : '绑定')
             .margin({ right: 5 })
             .type(ButtonType.Normal)
             .fontSize(14)

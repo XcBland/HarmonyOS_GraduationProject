@@ -1,7 +1,14 @@
-import { router } from '@kit.ArkUI'
+import cloud, { AuthUser } from '@hw-agconnect/cloud'
+import { promptAction, router } from '@kit.ArkUI'
 
 @Component
 export struct Add {
+  @State user: AuthUser | null = null
+
+  async aboutToAppear() {
+    this.user = await cloud.auth().getCurrentUser()
+  }
+
   build() {
     Column() {
       Text('发布专区')
@@ -9,12 +16,16 @@ export struct Add {
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center)
         .fontColor($r('app.color.text_primary'))
-        .margin({top:20})
+        .margin({ top: 20 })
       Column({ space: 30 }) {
         Row() {
           Button("发布攻略")
             .onClick(() => {
-              router.pushUrl({ url: 'pages/Travel/UpdateTravelLog/UpdateTravelLog' })
+              if (this.user?.getUid()) {
+                router.pushUrl({ url: 'pages/Travel/UpdateTravelLog/UpdateTravelLog' })
+              } else {
+                promptAction.showToast({ message: '请先登录' })
+              }
             })
             .type(ButtonType.Normal)
             .backgroundColor($r('app.color.primary'))
@@ -25,7 +36,11 @@ export struct Add {
             .backgroundColor('#FFC107')
             .borderRadius(10)
             .onClick(() => {
-              router.pushUrl({ url: 'pages/Travel/Asking/Asking' })
+              if (this.user?.getUid()) {
+                router.pushUrl({ url: 'pages/Travel/Asking/Asking' })
+              } else {
+                promptAction.showToast({ message: '请先登录' })
+              }
             })
         }
         .width('80%')
@@ -38,14 +53,18 @@ export struct Add {
             .backgroundColor('#4CAF50')
             .borderRadius(10)
             .onClick(() => {
-              router.pushUrl({ url: 'pages/Travel/UploadTravelNote/UploadTravelNote' })
+              if (this.user?.getUid()) {
+                router.pushUrl({ url: 'pages/Travel/UploadTravelNote/UploadTravelNote' })
+              } else {
+                promptAction.showToast({ message: '请先登录' })
+              }
             })
         }
         .width('80%')
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
       }
-      .margin({top: 10})
+      .margin({ top: 10 })
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
       .backgroundImage($r('app.media.fengjing13'))
