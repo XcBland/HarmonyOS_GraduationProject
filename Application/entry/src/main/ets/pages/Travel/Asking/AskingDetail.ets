@@ -37,6 +37,7 @@ struct AskingDetail {
   cloudDataBase_answer: DatabaseCollection<answer_list> | null = null
 
   async onPageShow() {
+    this.user = await cloud.auth().getCurrentUser()
     this.cloudDB = cloud.database({
       objectTypeInfo: schema,
       zoneName: this.cloudDBZone,
@@ -44,6 +45,7 @@ struct AskingDetail {
     this.cloudDataBase_question = this.cloudDB.collection<question_list>(question_list) // 获取云数据库的集合
     this.cloudDataBase_answer = this.cloudDB.collection<answer_list>(answer_list) // 获取云数据库的集合
     await this.queryAll()
+
   }
 
   // 查询问题和回答列表所有数据
